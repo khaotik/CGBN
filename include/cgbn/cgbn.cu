@@ -83,9 +83,9 @@ const char *cgbn_error_string(cgbn_error_report_t *report) {
     case cgbn_modulus_not_odd_error:
       return "invalid modulus (it must be odd)";
     case cgbn_inverse_does_not_exist_error:
-      return "inverse does not exist";
+      return "inverse does not exist";      
     case cgbn_no_error:
-      return NULL;
+      break;
   }
   return NULL;
 }
