@@ -1,16 +1,10 @@
-.PHONY: pick clean download-gtest kepler maxwell pascal volta turing ampere check
+all: check .cudaArch
+	$(eval export CUDA_GENCODE = $(shell cat .cudaArch))
+	make -C samples
+	make -C unit_tests
+	make -C perf_tests
 
-pick:
-	@echo
-	@echo Please run one of the following:
-	@echo "   make kepler"
-	@echo "   make maxwell"
-	@echo "   make pascal"
-	@echo "   make volta"
-	@echo "   make turing"
-	@echo "   make ampere"
-	@echo
-
+.PHONY: clean download-gtest check
 clean:
 	make -C samples clean
 	make -C unit_tests clean
@@ -23,36 +17,10 @@ download-gtest:
 	rmdir googletest-master
 	rm -f googletest-master.zip
 
-kepler: check
-	make -C samples kepler
-	make -C unit_tests kepler
-	make -C perf_tests kepler
-
-maxwell: check
-	make -C samples maxwell
-	make -C unit_tests maxwell
-	make -C perf_tests maxwell
-
-pascal: check
-	make -C samples pascal
-	make -C unit_tests pascal
-	make -C perf_tests pascal
-
-volta: check
-	make -C samples volta
-	make -C unit_tests volta
-	make -C perf_tests volta
-
-turing: check
-	make -C samples turing
-	make -C unit_tests turing
-	make -C perf_tests turing
-
-ampere: check
-	make -C samples ampere
-	make -C unit_tests ampere
-	make -C perf_tests ampere
+.cudaArch: cuda-caps.cu
+	nvcc cuda-caps.cu -o a.out
+	./a.out > .cudaArch
+	rm -f a.out
 
 check:
 	@if [ -z "$(GTEST_HOME)" -a ! -d "gtest" ]; then echo "Google Test framework required, see documentation"; exit 1; fi
-

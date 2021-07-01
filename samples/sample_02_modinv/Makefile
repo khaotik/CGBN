@@ -7,41 +7,14 @@ ifndef GMP_HOME
   LIB :=
 endif
 
-pick:
-	@echo
-	@echo Please run one of the following:
-	@echo "   make kepler"
-	@echo "   make maxwell"
-	@echo "   make pascal"
-	@echo "   make volta"
-	@echo "   make turing"
-	@echo "   make ampere"
-	@echo
+all: mo mo_faster
 
+.PHONY: clean
 clean:
 	rm -f mo mo_faster
 
-kepler:
-	nvcc $(INC) $(LIB) -I../../include -arch=sm_35 modinv_odd.cu -o mo -lgmp
-	nvcc $(INC) $(LIB) -I../../include -arch=sm_35 modinv_odd_faster.cu -o mo_faster -lgmp
+mo: modinv_odd.cu
+	nvcc $(INC) $(LIB) -I../../include -arch=sm_$(CUDA_GENCODE) $< -o $@ -lgmp
 
-maxwell:
-	nvcc $(INC) $(LIB) -I../../include -arch=sm_50 modinv_odd.cu -o mo -lgmp
-	nvcc $(INC) $(LIB) -I../../include -arch=sm_50 modinv_odd_faster.cu -o mo_faster -lgmp
-
-pascal:
-	nvcc $(INC) $(LIB) -I../../include -arch=sm_60 modinv_odd.cu -o mo -lgmp
-	nvcc $(INC) $(LIB) -I../../include -arch=sm_60 modinv_odd_faster.cu -o mo_faster -lgmp
-
-volta: 
-	nvcc $(INC) $(LIB) -I../../include -arch=sm_70 modinv_odd.cu -o mo -lgmp
-	nvcc $(INC) $(LIB) -I../../include -arch=sm_70 modinv_odd_faster.cu -o mo_faster -lgmp
-
-turing: 
-	nvcc $(INC) $(LIB) -I../../include -arch=sm_75 modinv_odd.cu -o mo -lgmp
-	nvcc $(INC) $(LIB) -I../../include -arch=sm_75 modinv_odd_faster.cu -o mo_faster -lgmp
-
-ampere: 
-	nvcc $(INC) $(LIB) -I../../include -arch=sm_80 modinv_odd.cu -o mo -lgmp
-	nvcc $(INC) $(LIB) -I../../include -arch=sm_80 modinv_odd_faster.cu -o mo_faster -lgmp
-
+mo_faster: modinv_odd_faster.cu
+	nvcc $(INC) $(LIB) -I../../include -arch=sm_$(CUDA_GENCODE) $< -o $@ -lgmp
