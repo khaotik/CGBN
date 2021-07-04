@@ -228,6 +228,7 @@ class core_t {
   __device__ __forceinline__ static uint32_t rem_ui32(const uint32_t a[LIMBS], const uint32_t div);
   __device__ __forceinline__ static uint32_t extract_bits_ui32(const uint32_t a[LIMBS], const uint32_t start, const uint32_t len);
   __device__ __forceinline__ static void     insert_bits_ui32(uint32_t r[LIMBS], const uint32_t a[LIMBS], const uint32_t start, const uint32_t len, uint32_t value);
+  __device__ __forceinline__ static bool     all_equals_ui32(const uint32_t a[LIMBS], const uint32_t value);
   __device__ __forceinline__ static bool     equals_ui32(const uint32_t a[LIMBS], const uint32_t value);
   __device__ __forceinline__ static int32_t  compare_ui32(const uint32_t a[LIMBS], const uint32_t value);
     

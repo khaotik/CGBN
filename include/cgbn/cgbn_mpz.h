@@ -160,6 +160,7 @@ class cgbn_env_t {
   __host__ uint32_t   mul_ui32(cgbn_t &r, const cgbn_t &a, const uint32_t mul) const;
   __host__ uint32_t   div_ui32(cgbn_t &r, const cgbn_t &a, const uint32_t div) const;
   __host__ uint32_t   rem_ui32(const cgbn_t &a, const uint32_t div) const;
+  __host__ bool       all_equals_ui32(const cgbn_t &a, const uint32_t value) const;
   __host__ bool       equals_ui32(const cgbn_t &a, const uint32_t value) const;
   __host__ int32_t    compare_ui32(const cgbn_t &a, const uint32_t value) const;
   __host__ uint32_t   extract_bits_ui32(const cgbn_t &a, const uint32_t start, const uint32_t len) const;

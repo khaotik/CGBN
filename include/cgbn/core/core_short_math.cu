@@ -264,6 +264,39 @@ __device__ __forceinline__ bool core_t<env>::equals_ui32(const uint32_t a[LIMBS]
 }
 
 template<class env>
+__device__ __forceinline__ bool core_t<env>::all_equals_ui32(const uint32_t a[LIMBS], const uint32_t value) {
+  const uint32_t
+    sync=sync_mask(),
+    group_thread=threadIdx.x & (TPI-1);
+  uint32_t reduce_val;
+
+  if (env::PADDING) {
+    reduce_val = (group_thread*LIMBS) >= (BITS/32) ? 0 : a[0]^value;
+  } else {
+    reduce_val = a[0]^value;
+  }
+  // it has high chance of being inequal, so we check right here
+  if (reduce_val == 0) {
+    if (env::PADDING) {
+      #pragma unroll
+      for(int32_t index=1;index<LIMBS;index++) {
+        reduce_val |= ((index+group_thread*LIMBS)>=(BITS/32)) ? 0 : (a[index]^value);
+        // reduce_val |= ((group_thread+index*TPI)>=(BITS/32)) ? 0 : (a[index]^value);
+      }
+    } else {
+      #pragma unroll
+      for(int32_t index=1;index<LIMBS;index++) {
+        reduce_val |= (a[index]^value);
+      }
+    }
+  }
+  uint32_t mask = __ballot_sync(sync, reduce_val==0);
+  if(TPI<warpSize)
+    mask=uright_wrap(mask, 0, threadIdx.x & ((warpSize-1)^(TPI-1))) & TPI_ONES;
+  return mask==TPI_ONES;
+}
+
+template<class env>
 __device__ __forceinline__ int32_t core_t<env>::compare_ui32(const uint32_t a[LIMBS], const uint32_t value) {
   uint32_t sync=sync_mask(), group_thread=threadIdx.x & TPI-1, lor, mask;
   int32_t  result=1;

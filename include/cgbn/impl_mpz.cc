@@ -268,6 +268,29 @@ bool cgbn_env_t<context_t, bits, convergence>::equals_ui32(const cgbn_t &a, cons
   return mpz_cmp_ui(a._z, value)==0;
 }
 
+// TODO.feat
+template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
+bool cgbn_env_t<context_t, bits, convergence>::all_equals_ui32(const cgbn_t &a, const uint32_t value) const {
+  bool ret=true;
+  mpz_t b;
+  mpz_init(b);
+  uint32_t word;
+  for(uint32_t i=0; i<bits; i+=32) {
+    if (i==0) {
+      word = mpz_get_ui(a._z);
+    } else {
+      mpz_fdiv_q_2exp(b, a._z, i);
+      word = mpz_get_ui(b);
+    }
+    if (word != value) {
+      ret = false;
+      break;
+    }
+  }
+  mpz_clear(b);
+  return ret;
+}
+
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
 int32_t cgbn_env_t<context_t, bits, convergence>::compare_ui32(const cgbn_t &a, const uint32_t value) const {
   int32_t cmp=mpz_cmp_ui(a._z, value);

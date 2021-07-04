@@ -301,6 +301,11 @@ __device__ __forceinline__ bool cgbn_env_t<context_t, bits, syncable>::equals_ui
 }
 
 template<class context_t, uint32_t bits, cgbn_syncable_t syncable>
+__device__ __forceinline__ bool cgbn_env_t<context_t, bits, syncable>::all_equals_ui32(const cgbn_t &a, const uint32_t value) const {
+  return cgbn::core_t<cgbn_env_t>::all_equals_ui32(a._limbs, value);
+}
+
+template<class context_t, uint32_t bits, cgbn_syncable_t syncable>
 __device__ __forceinline__ int32_t cgbn_env_t<context_t, bits, syncable>::compare_ui32(const cgbn_t &a, const uint32_t value) const {
   return cgbn::core_t<cgbn_env_t>::compare_ui32(a._limbs, value);
 }

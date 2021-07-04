@@ -52,6 +52,8 @@ IN THE SOFTWARE.
 #include "mul_ui32.h"
 #include "div_ui32.h"
 #include "rem_ui32.h"
+#include "all_equals_ui32_1.h"
+#include "all_equals_ui32_2.h"
 #include "equals_ui32_1.h"
 #include "equals_ui32_2.h"
 #include "equals_ui32_3.h"

@@ -215,6 +215,11 @@ __host__ __device__ __forceinline__ bool cgbn_equals_ui32(env_t env, const typen
 }
 
 template<class env_t>
+__host__ __device__ __forceinline__ bool cgbn_all_equals_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t value) {
+  return env.all_equals_ui32(a, value);
+}
+
+template<class env_t>
 __host__ __device__ __forceinline__ int32_t cgbn_compare_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t value) {
   return env.compare_ui32(a, value);
 }

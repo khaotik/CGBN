@@ -172,6 +172,7 @@ class cgbn_env_t {
   __device__ __forceinline__ uint32_t   div_ui32(cgbn_t &r, const cgbn_t &a, const uint32_t div) const;
   __device__ __forceinline__ uint32_t   rem_ui32(const cgbn_t &a, const uint32_t div) const;
   __device__ __forceinline__ bool       equals_ui32(const cgbn_t &a, const uint32_t value) const;
+  __device__ __forceinline__ bool       all_equals_ui32(const cgbn_t &a, const uint32_t value) const;
   __device__ __forceinline__ int32_t    compare_ui32(const cgbn_t &a, const uint32_t value) const;
   __device__ __forceinline__ uint32_t   extract_bits_ui32(const cgbn_t &a, const uint32_t start, const uint32_t len) const;
   __device__ __forceinline__ void       insert_bits_ui32(cgbn_t &r, const cgbn_t &a, const uint32_t start, const uint32_t len, const uint32_t value) const;

@@ -37,6 +37,7 @@ typedef enum test_enum {
   test_compare_3, test_compare_4, test_extract_bits_1, test_insert_bits_1,
   
   test_get_ui32_set_ui32_1, test_add_ui32_1, test_sub_ui32_1, test_mul_ui32_1, test_div_ui32_1, test_rem_ui32_1, 
+  test_all_equals_ui32_1, test_all_equals_ui32_2,
   test_equals_ui32_1, test_equals_ui32_2, test_equals_ui32_3, test_equals_ui32_4, test_compare_ui32_1, test_compare_ui32_2,
   test_extract_bits_ui32_1, test_insert_bits_ui32_1, test_binary_inverse_ui32_1, test_gcd_ui32_1,
   
@@ -184,7 +185,7 @@ static void generate_data(uint32_t count) {
     random_words(inputs[instance].u, 32, _state);
   }
   $GPU(cudaMalloc((void **)&_gpu_data, sizeof(typename types<params>::input_t)*count));
-  $GPU(cudaMemcpy(_gpu_data, _cpu_data, sizeof(typename types<params>::input_t)*count, cudaMemcpyHostToDevice));    
+  $GPU(cudaMemcpy(_gpu_data, _cpu_data, sizeof(typename types<params>::input_t)*count, cudaMemcpyHostToDevice));
 }
   
 template<class params>
