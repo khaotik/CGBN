@@ -47,6 +47,7 @@ IN THE SOFTWARE.
 #include "compare_4.h"
 
 #include "get_ui32_set_ui32.h"
+#include "all_set_ui32.h"
 #include "add_ui32.h"
 #include "sub_ui32.h"
 #include "mul_ui32.h"

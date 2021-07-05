@@ -393,6 +393,11 @@ __host__ __device__ __forceinline__ void cgbn_sub(env_t env, typename env_t::cgb
 }
 
 template<class env_t>
+__host__ __device__ __forceinline__ void cgbn_all_set_ui32(env_t env, typename env_t::cgbn_t &r, const uint32_t value) {
+  env.all_set_ui32(r, value);
+}
+
+template<class env_t>
 __host__ __device__ __forceinline__ void cgbn_set_ui32(env_t env, typename env_t::cgbn_accumulator_t &accumulator, const uint32_t value) {
   env.set_ui32(accumulator, value);
 }

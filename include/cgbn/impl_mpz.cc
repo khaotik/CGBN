@@ -811,6 +811,15 @@ __host__ int32_t cgbn_env_t<context_t, bits, convergence>::resolve(cgbn_t &sum, 
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
+__host__ void cgbn_env_t<context_t, bits, convergence>::all_set_ui32(cgbn_t &r, const uint32_t value) const {
+  mpz_set_ui(r._z, value);
+  for(int32_t i=32; i<bits; i+=32) {
+    mpz_mul_2exp(r._z, r._z, 32);
+    mpz_add_ui(r._z, r._z, value);
+  }
+}
+
+template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
 __host__ void cgbn_env_t<context_t, bits, convergence>::set_ui32(cgbn_accumulator_t &accumulator, const uint32_t value) const {
   mpz_set_ui(accumulator._z, value);
 }

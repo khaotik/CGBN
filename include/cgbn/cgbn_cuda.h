@@ -214,6 +214,7 @@ class cgbn_env_t {
   __device__ __forceinline__ void       set(cgbn_accumulator_t &accumulator, const cgbn_t &value) const;
   __device__ __forceinline__ void       add(cgbn_accumulator_t &accumulator, const cgbn_t &value) const;
   __device__ __forceinline__ void       sub(cgbn_accumulator_t &accumulator, const cgbn_t &value) const;
+  __device__ __forceinline__ void       all_set_ui32(cgbn_t &r, const uint32_t value) const;
   __device__ __forceinline__ void       set_ui32(cgbn_accumulator_t &accumulator, const uint32_t value) const;
   __device__ __forceinline__ void       add_ui32(cgbn_accumulator_t &accumulator, const uint32_t value) const;
   __device__ __forceinline__ void       sub_ui32(cgbn_accumulator_t &accumulator, const uint32_t value) const;

@@ -239,6 +239,12 @@ TYPED_TEST_P(CGBN1, insert_bits_1) {
   EXPECT_TRUE(result);
 }
 
+TYPED_TEST_P(CGBN2, all_set_ui32) {
+  bool result=run_test<test_all_set_ui32, TestFixture>(LONG_TEST);
+  
+  EXPECT_TRUE(result);
+}
+
 TYPED_TEST_P(CGBN2, get_ui32_set_ui32_1) {
   bool result=run_test<test_get_ui32_set_ui32_1, TestFixture>(LONG_TEST);
   
@@ -601,6 +607,7 @@ REGISTER_TYPED_TEST_SUITE_P(CGBN1,
  extract_bits_1, insert_bits_1
 );
 REGISTER_TYPED_TEST_SUITE_P(CGBN2, 
+ all_set_ui32,
  get_ui32_set_ui32_1, add_ui32_1, sub_ui32_1, mul_ui32_1, div_ui32_1, rem_ui32_1, 
  all_equals_ui32_1, all_equals_ui32_2,
  equals_ui32_1, equals_ui32_2, equals_ui32_3, equals_ui32_4, compare_ui32_1, compare_ui32_2,

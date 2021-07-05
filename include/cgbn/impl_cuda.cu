@@ -846,6 +846,24 @@ __device__ __forceinline__ int32_t cgbn_env_t<context_t, bits, syncable>::resolv
 }
 
 template<class context_t, uint32_t bits, cgbn_syncable_t syncable>
+__device__ __forceinline__ void cgbn_env_t<context_t, bits, syncable>::all_set_ui32(cgbn_t &r, const uint32_t value) const {
+  if (PADDING == 0) {
+    #pragma unroll
+    for(int32_t index=0; index<LIMBS; index++) {
+      r._limbs[index] = value;
+    }
+  } else {
+    const int32_t group_thread=threadIdx.x & TPI-1;
+    #pragma unroll
+    for(int32_t index=0; index<LIMBS; index++) {
+      if(group_thread*LIMBS+index < (BITS/32)) {
+        r._limbs[index] = value;
+      }
+    }
+  }
+}
+
+template<class context_t, uint32_t bits, cgbn_syncable_t syncable>
 __device__ __forceinline__ void cgbn_env_t<context_t, bits, syncable>::set_ui32(cgbn_accumulator_t &accumulator, const uint32_t value) const {
   uint32_t group_thread=threadIdx.x & TPI-1;
 
