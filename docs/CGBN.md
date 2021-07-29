@@ -256,6 +256,12 @@ Returns true to all threads in the CGBN if **_a = value_**, false otherwise.
 
 ---
 
+`bool cgbn_all_equals_ui32(cgbn_env_t env, const cgbn_t &a, const uint32_t value)`
+
+Returns true to all threads in the CGBN if all limbs in **_a = value_**, false otherwise.
+
+---
+
 `int32_t cgbn_compare_ui32(cgbn_env_t env, const cgbn_t &a, const uint32_t value)`
 
 Returns 1 to all threads in the CGBN if **_a > value_**, 0 if **_a = value_**, and -1 if **_a < value_**.
