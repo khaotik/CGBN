@@ -22,6 +22,8 @@ IN THE SOFTWARE.
 
 ***/
 
+#pragma once
+#define CGBN_API_INLINE __host__ __device__ __forceinline__
 #include <stdio.h>
 #include <stdlib.h>
 #include <cuda.h>
@@ -82,8 +84,8 @@ const char *cgbn_error_string(cgbn_error_report_t *report);
 #endif
 
 
-template<class env_t, class source_cgbn_t>
-__host__ __device__ __forceinline__ void cgbn_set(env_t env, typename env_t::cgbn_t &r, const source_cgbn_t &a) {
+template<class env_t, class source_cgbn_t> CGBN_API_INLINE void
+cgbn_set(env_t env, typename env_t::cgbn_t &r, const source_cgbn_t &a) {
   env.set(r, a);
 }
 
@@ -92,431 +94,442 @@ __host__ __device__ __forceinline__ void cgbn_swap(env_t env, typename env_t::cg
   env.swap(r, a);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ int32_t cgbn_add(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
+template<class env_t> CGBN_API_INLINE int32_t
+cgbn_add(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
   return env.add(r, a, b);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ int32_t cgbn_sub(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
+template<class env_t> CGBN_API_INLINE int32_t
+cgbn_sub(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
   return env.sub(r, a, b);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ int32_t cgbn_negate(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a) {
+template<class env_t> CGBN_API_INLINE int32_t
+cgbn_negate(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a) {
   return env.negate(r, a);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_mul(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_mul(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
   env.mul(r, a, b);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_mul_high(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_mul_high(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
   env.mul_high(r, a, b);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_sqr(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_sqr(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a) {
   env.sqr(r, a);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_sqr_high(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_sqr_high(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a) {
   env.sqr_high(r, a);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_div(env_t env, typename env_t::cgbn_t &q, const typename env_t::cgbn_t &num, const typename env_t::cgbn_t &denom) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_div(env_t env, typename env_t::cgbn_t &q, const typename env_t::cgbn_t &num, const typename env_t::cgbn_t &denom) {
   env.div(q, num, denom);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_rem(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &num, const typename env_t::cgbn_t &denom) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_rem(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &num, const typename env_t::cgbn_t &denom) {
   env.rem(r, num, denom);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_div_rem(env_t env, typename env_t::cgbn_t &q, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &num, const typename env_t::cgbn_t &denom) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_div_rem(env_t env, typename env_t::cgbn_t &q, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &num, const typename env_t::cgbn_t &denom) {
   env.div_rem(q, r, num, denom);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_sqrt(env_t env, typename env_t::cgbn_t &s, const typename env_t::cgbn_t &a) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_sqrt(env_t env, typename env_t::cgbn_t &s, const typename env_t::cgbn_t &a) {
   env.sqrt(s, a);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_sqrt_rem(env_t env, typename env_t::cgbn_t &s, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_sqrt_rem(env_t env, typename env_t::cgbn_t &s, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a) {
   env.sqrt_rem(s, r, a);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ bool cgbn_equals(env_t env, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
+template<class env_t> CGBN_API_INLINE bool
+cgbn_equals(env_t env, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
   return env.equals(a, b);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ int32_t cgbn_compare(env_t env, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
+template<class env_t> CGBN_API_INLINE int32_t
+cgbn_compare(env_t env, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
   return env.compare(a, b);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_extract_bits(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t start, const uint32_t len) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_extract_bits(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t start, const uint32_t len) {
   env.extract_bits(r, a, start, len);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_insert_bits(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t start, const uint32_t len, const typename env_t::cgbn_t &value) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_insert_bits(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t start, const uint32_t len, const typename env_t::cgbn_t &value) {
   env.insert_bits(r, a, start, len, value);
 }
 
 
 /* ui32 arithmetic routines*/
-template<class env_t>
-__host__ __device__ __forceinline__ uint32_t cgbn_get_ui32(env_t env, const typename env_t::cgbn_t &a) {
+template<class env_t> CGBN_API_INLINE uint32_t
+cgbn_get_ui32(env_t env, const typename env_t::cgbn_t &a) {
   return env.get_ui32(a);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_set_ui32(env_t env, typename env_t::cgbn_t &r, const uint32_t value) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_set_ui32(env_t env, typename env_t::cgbn_t &r, const uint32_t value) {
   env.set_ui32(r, value);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ int32_t cgbn_add_ui32(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t add) {
+template<class env_t> CGBN_API_INLINE int32_t
+cgbn_add_ui32(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t add) {
   return env.add_ui32(r, a, add);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ int32_t cgbn_sub_ui32(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t sub) {
+template<class env_t> CGBN_API_INLINE int32_t
+cgbn_sub_ui32(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t sub) {
   return env.sub_ui32(r, a, sub);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ uint32_t cgbn_mul_ui32(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t mul) {
+template<class env_t> CGBN_API_INLINE uint32_t
+cgbn_mul_ui32(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t mul) {
   return env.mul_ui32(r, a, mul);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ uint32_t cgbn_div_ui32(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t div) {
+template<class env_t> CGBN_API_INLINE uint32_t
+cgbn_div_ui32(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t div) {
   return env.div_ui32(r, a, div);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ uint32_t cgbn_rem_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t div) {
+template<class env_t> CGBN_API_INLINE uint32_t
+cgbn_rem_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t div) {
   return env.rem_ui32(a, div);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ bool cgbn_equals_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t value) {
+template<class env_t> CGBN_API_INLINE bool
+cgbn_equals_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t value) {
   return env.equals_ui32(a, value);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ bool cgbn_all_equals_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t value) {
+template<class env_t> CGBN_API_INLINE bool
+cgbn_all_equals_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t value) {
   return env.all_equals_ui32(a, value);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ int32_t cgbn_compare_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t value) {
+template<class env_t> CGBN_API_INLINE int32_t
+cgbn_compare_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t value) {
   return env.compare_ui32(a, value);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ uint32_t cgbn_extract_bits_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t start, const uint32_t len) {
+template<class env_t> CGBN_API_INLINE uint32_t
+cgbn_extract_bits_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t start, const uint32_t len) {
   return env.extract_bits_ui32(a, start, len);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_insert_bits_ui32(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t start, const uint32_t len, const uint32_t value) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_insert_bits_ui32(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t start, const uint32_t len, const uint32_t value) {
   env.insert_bits_ui32(r, a, start, len, value);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ uint32_t cgbn_binary_inverse_ui32(env_t env, const uint32_t n0) {
+template<class env_t> CGBN_API_INLINE uint32_t
+cgbn_binary_inverse_ui32(env_t env, const uint32_t n0) {
   return env.binary_inverse_ui32(n0);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ uint32_t cgbn_gcd_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t value) {
+template<class env_t> CGBN_API_INLINE uint32_t
+cgbn_gcd_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t value) {
   return env.gcd_ui32(a, value);
 }
 
 
 /* wide arithmetic routines */
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_mul_wide(env_t env, typename env_t::cgbn_wide_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_mul_wide(env_t env, typename env_t::cgbn_wide_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
   env.mul_wide(r, a, b);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_sqr_wide(env_t env, typename env_t::cgbn_wide_t &r, const typename env_t::cgbn_t &a) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_sqr_wide(env_t env, typename env_t::cgbn_wide_t &r, const typename env_t::cgbn_t &a) {
   env.sqr_wide(r, a);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_div_wide(env_t env, typename env_t::cgbn_t &q, const typename env_t::cgbn_wide_t &num, const typename env_t::cgbn_t &denom) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_div_wide(env_t env, typename env_t::cgbn_t &q, const typename env_t::cgbn_wide_t &num, const typename env_t::cgbn_t &denom) {
   env.div_wide(q, num, denom);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_rem_wide(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_wide_t &num, const typename env_t::cgbn_t &denom) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_rem_wide(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_wide_t &num, const typename env_t::cgbn_t &denom) {
   env.rem_wide(r, num, denom);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_div_rem_wide(env_t env, typename env_t::cgbn_t &q, typename env_t::cgbn_t &r, const typename env_t::cgbn_wide_t &num, const typename env_t::cgbn_t &denom) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_div_rem_wide(env_t env, typename env_t::cgbn_t &q, typename env_t::cgbn_t &r, const typename env_t::cgbn_wide_t &num, const typename env_t::cgbn_t &denom) {
   env.div_rem_wide(q, r, num, denom);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_sqrt_wide(env_t env, typename env_t::cgbn_t &s, const typename env_t::cgbn_wide_t &a) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_sqrt_wide(env_t env, typename env_t::cgbn_t &s, const typename env_t::cgbn_wide_t &a) {
   env.sqrt_wide(s, a);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_sqrt_rem_wide(env_t env, typename env_t::cgbn_t &s, typename env_t::cgbn_wide_t &r, const typename env_t::cgbn_wide_t &a) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_sqrt_rem_wide(env_t env, typename env_t::cgbn_t &s, typename env_t::cgbn_wide_t &r, const typename env_t::cgbn_wide_t &a) {
   env.sqrt_rem_wide(s, r, a);
 }
 
 
 /* logical, shifting, masking */
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_bitwise_and(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_bitwise_and(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
   env.bitwise_and(r, a, b);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_bitwise_ior(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_bitwise_ior(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
   env.bitwise_ior(r, a, b);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_bitwise_xor(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_bitwise_xor(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
   env.bitwise_xor(r, a, b);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_bitwise_complement(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_bitwise_complement(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a) {
   env.bitwise_complement(r, a);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_bitwise_select(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &clear, const typename env_t::cgbn_t &set, const typename env_t::cgbn_t &select) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_bitwise_select(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &clear, const typename env_t::cgbn_t &set, const typename env_t::cgbn_t &select) {
   env.bitwise_select(r, clear, set, select);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_bitwise_mask_copy(env_t env, typename env_t::cgbn_t &r, const int32_t numbits) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_bitwise_mask_copy(env_t env, typename env_t::cgbn_t &r, const int32_t numbits) {
   env.bitwise_mask_copy(r, numbits);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_bitwise_mask_and(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const int32_t numbits) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_bitwise_mask_and(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const int32_t numbits) {
   env.bitwise_mask_and(r, a, numbits);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_bitwise_mask_ior(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const int32_t numbits) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_bitwise_mask_ior(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const int32_t numbits) {
   env.bitwise_mask_ior(r, a, numbits);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_bitwise_mask_xor(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const int32_t numbits) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_bitwise_mask_xor(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const int32_t numbits) {
   env.bitwise_mask_xor(r, a, numbits);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_bitwise_mask_select(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &clear, const typename env_t::cgbn_t &set, int32_t numbits) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_bitwise_mask_select(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &clear, const typename env_t::cgbn_t &set, int32_t numbits) {
   env.bitwise_mask_select(r, clear, set, numbits);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_shift_left(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t numbits) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_shift_left(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t numbits) {
   env.shift_left(r, a, numbits);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_shift_right(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t numbits) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_shift_right(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t numbits) {
   env.shift_right(r, a, numbits);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_rotate_left(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t numbits) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_rotate_left(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t numbits) {
   env.rotate_left(r, a, numbits);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_rotate_right(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t numbits) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_rotate_right(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t numbits) {
   env.rotate_right(r, a, numbits);
 }
 
 
 /* bit counting */
-template<class env_t>
-__host__ __device__ __forceinline__ uint32_t cgbn_pop_count(env_t env, const typename env_t::cgbn_t &a) {
+template<class env_t> CGBN_API_INLINE uint32_t
+cgbn_pop_count(env_t env, const typename env_t::cgbn_t &a) {
   return env.pop_count(a);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ uint32_t cgbn_clz(env_t env, const typename env_t::cgbn_t &a) {
+template<class env_t> CGBN_API_INLINE uint32_t
+cgbn_clz(env_t env, const typename env_t::cgbn_t &a) {
   return env.clz(a);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ uint32_t cgbn_ctz(env_t env, const typename env_t::cgbn_t &a) {
+template<class env_t> CGBN_API_INLINE uint32_t
+cgbn_ctz(env_t env, const typename env_t::cgbn_t &a) {
   return env.ctz(a);
 }
 
 
 /* accumulator APIs */
-template<class env_t>
-__host__ __device__ __forceinline__ int32_t cgbn_resolve(env_t env, typename env_t::cgbn_t &sum, const typename env_t::cgbn_accumulator_t &accumulator) {
+template<class env_t> CGBN_API_INLINE int32_t
+cgbn_resolve(env_t env, typename env_t::cgbn_t &sum, const typename env_t::cgbn_accumulator_t &accumulator) {
   return env.resolve(sum, accumulator);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_set(env_t env, typename env_t::cgbn_accumulator_t &accumulator, const typename env_t::cgbn_t &value) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_set(env_t env, typename env_t::cgbn_accumulator_t &accumulator, const typename env_t::cgbn_t &value) {
   env.set(accumulator, value);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_add(env_t env, typename env_t::cgbn_accumulator_t &accumulator, const typename env_t::cgbn_t &value) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_add(env_t env, typename env_t::cgbn_accumulator_t &accumulator, const typename env_t::cgbn_t &value) {
   env.add(accumulator, value);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_sub(env_t env, typename env_t::cgbn_accumulator_t &accumulator, const typename env_t::cgbn_t &value) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_sub(env_t env, typename env_t::cgbn_accumulator_t &accumulator, const typename env_t::cgbn_t &value) {
   env.sub(accumulator, value);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_all_set_ui32(env_t env, typename env_t::cgbn_t &r, const uint32_t value) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_all_set_ui32(env_t env, typename env_t::cgbn_t &r, const uint32_t value) {
   env.all_set_ui32(r, value);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_set_ui32(env_t env, typename env_t::cgbn_accumulator_t &accumulator, const uint32_t value) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_set_ui32(env_t env, typename env_t::cgbn_accumulator_t &accumulator, const uint32_t value) {
   env.set_ui32(accumulator, value);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_add_ui32(env_t env, typename env_t::cgbn_accumulator_t &accumulator, const uint32_t value) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_add_ui32(env_t env, typename env_t::cgbn_accumulator_t &accumulator, const uint32_t value) {
   env.add_ui32(accumulator, value);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_sub_ui32(env_t env, typename env_t::cgbn_accumulator_t &accumulator, const uint32_t value) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_sub_ui32(env_t env, typename env_t::cgbn_accumulator_t &accumulator, const uint32_t value) {
   env.sub_ui32(accumulator, value);
 }
 
 
 /* math */
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_binary_inverse(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &x) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_binary_inverse(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &x) {
   env.binary_inverse(r, x);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_gcd(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_gcd(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
   env.gcd(r, a, b);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ bool cgbn_modular_inverse(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &x, const typename env_t::cgbn_t &modulus) {
+template<class env_t> CGBN_API_INLINE bool
+cgbn_modular_inverse(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &x, const typename env_t::cgbn_t &modulus) {
   return env.modular_inverse(r, x, modulus);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_modular_power(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &x, const typename env_t::cgbn_t &exponent, const typename env_t::cgbn_t &modulus) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_modular_power(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &x, const typename env_t::cgbn_t &exponent, const typename env_t::cgbn_t &modulus) {
   env.modular_power(r, x, exponent, modulus);
 }
 
 
 /* fast division: common divisor / modulus */
-template<class env_t>
-__host__ __device__ __forceinline__ uint32_t cgbn_bn2mont(env_t env, typename env_t::cgbn_t &mont, const typename env_t::cgbn_t &bn, const typename env_t::cgbn_t &n) {
+template<class env_t> CGBN_API_INLINE uint32_t
+cgbn_bn2mont(env_t env, typename env_t::cgbn_t &mont, const typename env_t::cgbn_t &bn, const typename env_t::cgbn_t &n) {
   return env.bn2mont(mont, bn, n);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_mont2bn(env_t env, typename env_t::cgbn_t &bn, const typename env_t::cgbn_t &mont, const typename env_t::cgbn_t &n, const uint32_t np0) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_mont2bn(env_t env, typename env_t::cgbn_t &bn, const typename env_t::cgbn_t &mont, const typename env_t::cgbn_t &n, const uint32_t np0) {
   env.mont2bn(bn, mont, n, np0);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_mont_mul(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b, const typename env_t::cgbn_t &n, const uint32_t np0) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_mont_mul(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b, const typename env_t::cgbn_t &n, const uint32_t np0) {
   env.mont_mul(r, a, b, n, np0);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_mont_sqr(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &n, const uint32_t np0) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_mont_sqr(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &n, const uint32_t np0) {
   env.mont_sqr(r, a, n, np0);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_mont_reduce_wide(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_wide_t &a, const typename env_t::cgbn_t &n, const uint32_t np0) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_mont_reduce_wide(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_wide_t &a, const typename env_t::cgbn_t &n, const uint32_t np0) {
   env.mont_reduce_wide(r, a, n, np0);
 }
 
 
-template<class env_t>
-__host__ __device__ __forceinline__ uint32_t cgbn_barrett_approximation(env_t env, typename env_t::cgbn_t &approx, const typename env_t::cgbn_t &denom) {
+template<class env_t> CGBN_API_INLINE uint32_t
+cgbn_barrett_approximation(env_t env, typename env_t::cgbn_t &approx, const typename env_t::cgbn_t &denom) {
   return env.barrett_approximation(approx, denom);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_barrett_div(env_t env, typename env_t::cgbn_t &q, const typename env_t::cgbn_t &num, const typename env_t::cgbn_t &denom, const typename env_t::cgbn_t &approx, const uint32_t denom_clz) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_barrett_div(env_t env, typename env_t::cgbn_t &q, const typename env_t::cgbn_t &num, const typename env_t::cgbn_t &denom, const typename env_t::cgbn_t &approx, const uint32_t denom_clz) {
   env.barrett_div(q, num, denom, approx, denom_clz);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_barrett_rem(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &num, const typename env_t::cgbn_t &denom, const typename env_t::cgbn_t &approx, const uint32_t denom_clz) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_barrett_rem(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &num, const typename env_t::cgbn_t &denom, const typename env_t::cgbn_t &approx, const uint32_t denom_clz) {
   env.barrett_rem(r, num, denom, approx, denom_clz);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_barrett_div_rem(env_t env, typename env_t::cgbn_t &q, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &num, const typename env_t::cgbn_t &denom, const typename env_t::cgbn_t &approx, const uint32_t denom_clz) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_barrett_div_rem(env_t env, typename env_t::cgbn_t &q, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &num, const typename env_t::cgbn_t &denom, const typename env_t::cgbn_t &approx, const uint32_t denom_clz) {
   env.barrett_div_rem(q, r, num, denom, approx, denom_clz);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_barrett_div_wide(env_t env, typename env_t::cgbn_t &q, const typename env_t::cgbn_wide_t &num, const typename env_t::cgbn_t &denom, const typename env_t::cgbn_t &approx, const uint32_t denom_clz) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_barrett_div_wide(env_t env, typename env_t::cgbn_t &q, const typename env_t::cgbn_wide_t &num, const typename env_t::cgbn_t &denom, const typename env_t::cgbn_t &approx, const uint32_t denom_clz) {
   env.barrett_div_wide(q, num, denom, approx, denom_clz);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_barrett_rem_wide(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_wide_t &num, const typename env_t::cgbn_t &denom, const typename env_t::cgbn_t &approx, const uint32_t denom_clz) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_barrett_rem_wide(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_wide_t &num, const typename env_t::cgbn_t &denom, const typename env_t::cgbn_t &approx, const uint32_t denom_clz) {
   env.barrett_rem_wide(r, num, denom, approx, denom_clz);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_barrett_div_rem_wide(env_t env, typename env_t::cgbn_t &q, typename env_t::cgbn_t &r, const typename env_t::cgbn_wide_t &num, const typename env_t::cgbn_t &denom, const typename env_t::cgbn_t &approx, const uint32_t denom_clz) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_barrett_div_rem_wide(env_t env, typename env_t::cgbn_t &q, typename env_t::cgbn_t &r, const typename env_t::cgbn_wide_t &num, const typename env_t::cgbn_t &denom, const typename env_t::cgbn_t &approx, const uint32_t denom_clz) {
   env.barrett_div_rem_wide(q, r, num, denom, approx, denom_clz);
 }
 
 
 /* load/store to global or shared memory */
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_load(env_t env, typename env_t::cgbn_t &r, cgbn_mem_t<env_t::BITS> *const address) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_load(env_t env, typename env_t::cgbn_t &r, cgbn_mem_t<env_t::BITS> *const address) {
   env.load(r, address);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_store(env_t env, cgbn_mem_t<env_t::BITS> *address, const typename env_t::cgbn_t &a) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_store(env_t env, cgbn_mem_t<env_t::BITS> *address, const typename env_t::cgbn_t &a) {
   env.store(address, a);
+}
+
+/* truncated load & store */
+template<class env_t, uint32_t mem_limb_count> CGBN_API_INLINE void
+cgbn_load_shorter(env_t env, typename env_t::cgbn_t &dst, const uint32_t *const src, uint32_t mem_limb_count) {
+  // TODO.stub
+}
+
+template<class env_t, uint32_t mem_limb_count> CGBN_API_INLINE void
+cgbn_store_shorter(env_t env, uint32_t *const dst, const typename env_t::cgbn_t &src, uint32_t mem_limb_count) {
+  // TODO.stub
 }
 
 
 /* load/store to local memory */
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_load(env_t env, typename env_t::cgbn_t &r, typename env_t::cgbn_local_t *const address) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_load(env_t env, typename env_t::cgbn_t &r, typename env_t::cgbn_local *const address) {
   env.load(r, address);
 }
 
-template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_store(env_t env, typename env_t::cgbn_local_t *address, const typename env_t::cgbn_t &a) {
+template<class env_t> CGBN_API_INLINE void
+cgbn_store(env_t env, typename env_t::cgbn_local_t *address, const typename env_t::cgbn_t &a) {
   env.store(address, a);
 }
