@@ -22,8 +22,10 @@ IN THE SOFTWARE.
 
 ***/
 
+#ifndef __CUDACC_RTC__
 #include <cooperative_groups.h>
 namespace cg=cooperative_groups;
+#endif
 
 typedef enum {
   cgbn_instance_syncable,

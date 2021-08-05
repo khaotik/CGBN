@@ -24,9 +24,17 @@ IN THE SOFTWARE.
 
 #pragma once
 #define CGBN_API_INLINE __host__ __device__ __forceinline__
+
+#ifndef __CUDACC_RTC__
 #include <stdio.h>
 #include <stdlib.h>
 #include <cuda.h>
+#else
+typedef int int32_t;
+typedef long long int64_t;
+typedef unsigned int uint32_t;
+typedef unsigned long long uint64_t;
+#endif
 
 /* basic types */
 typedef enum {
@@ -58,6 +66,7 @@ typedef enum {
   cgbn_halt_monitor,    /* writes errors to the reporter and halts */
 } cgbn_monitor_t;
 
+#ifndef __CUDACC_RTC__
 cudaError_t cgbn_error_report_alloc(cgbn_error_report_t **report);
 cudaError_t cgbn_error_report_free(cgbn_error_report_t *report);
 bool        cgbn_error_report_check(cgbn_error_report_t *report);
@@ -65,6 +74,7 @@ void        cgbn_error_report_reset(cgbn_error_report_t *report);
 const char *cgbn_error_string(cgbn_error_report_t *report);
 
 #include "cgbn.cu"
+#endif
 
 #if defined(__CUDA_ARCH__)
   #if !defined(XMP_IMAD) && !defined(XMP_XMAD) && !defined(XMP_WMAD)
@@ -512,12 +522,12 @@ cgbn_store(env_t env, cgbn_mem_t<env_t::BITS> *address, const typename env_t::cg
 }
 
 /* truncated load & store */
-template<class env_t, uint32_t mem_limb_count> CGBN_API_INLINE void
+template<class env_t> CGBN_API_INLINE void
 cgbn_load_shorter(env_t env, typename env_t::cgbn_t &dst, const uint32_t *const src, uint32_t mem_limb_count) {
   // TODO.stub
 }
 
-template<class env_t, uint32_t mem_limb_count> CGBN_API_INLINE void
+template<class env_t> CGBN_API_INLINE void
 cgbn_store_shorter(env_t env, uint32_t *const dst, const typename env_t::cgbn_t &src, uint32_t mem_limb_count) {
   // TODO.stub
 }
