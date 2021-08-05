@@ -1383,6 +1383,32 @@ void cgbn_env_t<context_t, bits, convergence>::store(cgbn_mem_t<bits> *address, 
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
+void cgbn_env_t<context_t, bits, convergence>::load_shorter(cgbn_t &dst, uint32_t *const src, uint32_t mem_limb_count) const {
+  constexpr uint32_t nlimb = (bits+31)/32;
+  const uint32_t words_togo = nlimb < mem_limb_count ? nlimb : mem_limb_count;
+  mpz_import(dst._z, words_togo , -1, sizeof(uint32_t), 0, 0, (uint32_t *)src);
+}
+
+template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
+void cgbn_env_t<context_t, bits, convergence>::store_shorter(uint32_t *dst, const cgbn_t &src, uint32_t mem_limb_count) const {
+  size_t words;
+  mpz_t ret;
+
+  if(mpz_sizeinbase(src._z, 2)>bits) {
+    fprintf(stderr, "from_mpz failed -- result does not fit");
+    exit(1);
+  }
+
+  mp_bitcnt_t dst_bit_count = 32*mem_limb_count;
+  mpz_init2(ret, dst_bit_count);
+  mpz_fdiv_r_2exp(ret, src._z, dst_bit_count);
+  mpz_export(dst, &words, -1, sizeof(uint32_t), 0, 0, ret);
+  while(words<mem_limb_count)
+    ((uint32_t *)dst)[words++]=0;
+  mpz_clear(ret);
+}
+
+template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
 void cgbn_env_t<context_t, bits, convergence>::load(cgbn_t &r, cgbn_local_t *const address) const {
   mpz_set(r._z, address->_z);
 }

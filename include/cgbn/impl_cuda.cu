@@ -1429,9 +1429,53 @@ __device__ __forceinline__ void cgbn_env_t<context_t, bits, syncable>::store(cgb
           __trap();
         }
 #endif
-    }
-    else
+    } else {
       address->_limbs[group_thread*LIMBS + limb]=a._limbs[limb];
+    }
+  }
+}
+
+template<class context_t, uint32_t bits, cgbn_syncable_t syncable>
+__device__ __forceinline__ void cgbn_env_t<context_t, bits, syncable>::load_shorter(cgbn_t &dst, uint32_t *const src, uint32_t mem_limb_count) const {
+  int32_t group_thread=threadIdx.x & TPI-1;
+  int32_t limb;
+
+  const uint32_t limb_todo = LIMBS < mem_limb_count ? LIMBS : mem_limb_count;
+  #pragma unroll
+  for(limb=0;limb<LIMBS;limb++) {
+    bool pred = limb < limb_todo;
+    if(PADDING!=0) {
+      dst._limbs[limb]=0;
+      if((group_thread*LIMBS<BITS/32-limb) && pred)
+        dst._limbs[limb]=src->_limbs[group_thread*LIMBS + limb];
+    } else {
+      dst._limbs[limb] = pred ? (src->_limbs[group_thread*LIMBS + limb]) : 0;
+    }
+  }
+}
+
+template<class context_t, uint32_t bits, cgbn_syncable_t syncable>
+__device__ __forceinline__ void cgbn_env_t<context_t, bits, syncable>::store_shorter(uint32_t *dst, const cgbn_t &src, uint32_t mem_limb_count) const {
+  int32_t group_thread=threadIdx.x & TPI-1;
+  int32_t limb;
+
+  const uint32_t limb_todo = LIMBS < mem_limb_count ? LIMBS : mem_limb_count;
+  #pragma unroll
+  for(limb=0;limb<LIMBS;limb++) {
+    uint32_t value = limb < limb_todo ? src._limbs[limb] : 0;
+    if(PADDING!=0) {
+      if(group_thread*LIMBS<BITS/32-limb) {
+        dst->_limbs[group_thread*LIMBS + limb] = value;
+      }
+#if 1
+      else if(src._limbs[limb]!=0) {
+        printf("BAD LIMB: %d %d %d\n", blockIdx.x, threadIdx.x, limb);
+        __trap();
+      }
+#endif
+    } else {
+      dst->_limbs[group_thread*LIMBS + limb] = value;
+    }
   }
 }
 

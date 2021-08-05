@@ -254,6 +254,8 @@ class cgbn_env_t {
   /* load/store to global or shared memory */
   __host__ void       load(cgbn_t &r, cgbn_mem_t<bits> *const address) const;
   __host__ void       store(cgbn_mem_t<bits> *address, const cgbn_t &a) const;
+  __host__ void       load_shorter(cgbn_t &dst, uint32_t *const src, uint32_t mem_limb_count) const;
+  __host__ void       store_shorter(uint32_t *dst, const cgbn_t &src, uint32_t mem_limb_count) const;
 
   /* load/store to local memory */
   __host__ void       load(cgbn_t &r, cgbn_local_t *const address) const;

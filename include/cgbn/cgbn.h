@@ -523,13 +523,13 @@ cgbn_store(env_t env, cgbn_mem_t<env_t::BITS> *address, const typename env_t::cg
 
 /* truncated load & store */
 template<class env_t> CGBN_API_INLINE void
-cgbn_load_shorter(env_t env, typename env_t::cgbn_t &dst, const uint32_t *const src, uint32_t mem_limb_count) {
-  // TODO.stub
+cgbn_load_shorter(env_t env, typename env_t::cgbn_t &dst, uint32_t *const src, uint32_t mem_limb_count) {
+  env.load_shorter(dst, src, mem_limb_count);
 }
 
 template<class env_t> CGBN_API_INLINE void
-cgbn_store_shorter(env_t env, uint32_t *const dst, const typename env_t::cgbn_t &src, uint32_t mem_limb_count) {
-  // TODO.stub
+cgbn_store_shorter(env_t env, uint32_t *dst, const typename env_t::cgbn_t &src, uint32_t mem_limb_count) {
+  env.store_shorter(dst, src, mem_limb_count);
 }
 
 
