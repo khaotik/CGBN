@@ -70,7 +70,12 @@ static uint32_t         _count=0;
 static void            *_cpu_data=NULL;
 static void            *_gpu_data=NULL;
 
-#define $GPU(call) if((call)!=0) { printf("\nCall \"" #call "\" failed from %s, line %d\n", __FILE__, __LINE__); exit(1); }
+cudaError_t _checkCudaError(cudaError_t err, int line, const char* file) {
+  if (err != cudaSuccess) {
+    printf("%s at %s:%d: %s\n", cudaGetErrorName(err), file, line, cudaGetErrorString(err));
+  } return err; }
+
+#define $GPU(expr) do { if(cudaSuccess!=_checkCudaError(expr,__LINE__,__FILE__)) exit(123); } while (false)
 
 void zero_words(uint32_t *x, uint32_t count) {
   int index;
