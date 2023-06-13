@@ -25,6 +25,7 @@ IN THE SOFTWARE.
 /****************************************************************************************************************
  * cgbn_gmp_context_t implementation using GMP
  ****************************************************************************************************************/
+#ifndef __CUDA_ARCH__
 template<uint32_t tpi, class params>
 cgbn_gmp_context_t<tpi, params>::cgbn_gmp_context_t() : _monitor(cgbn_no_checks), _report(NULL), _instance(0xFFFFFFFF) {
 }
@@ -1418,3 +1419,4 @@ void cgbn_gmp_env_t<context_t, bits, convergence>::store(cgbn_local_t *address, 
   mpz_set(address->_z, a._z);
 }
 
+#endif

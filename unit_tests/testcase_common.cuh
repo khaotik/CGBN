@@ -1,11 +1,41 @@
 #pragma once
 #include <stdint.h>
+#include <type_traits>
+
 #include <gtest/gtest.h>
 #include <cuda_runtime.h>
 #include <gmp.h> 
 
 #include "cgbn/cgbn.h"
-#include "types.h"
+
+template<typename params, bool is_gpu=false>
+struct TestTrait {
+  struct input_t {
+    cgbn_mem_t<params::size> h1;
+    cgbn_mem_t<params::size> h2;
+    cgbn_mem_t<params::size> x1;
+    cgbn_mem_t<params::size> x2;
+    cgbn_mem_t<params::size> x3;
+    // keep everything 128 byte aligned
+    uint32_t                 u[32];
+  };
+
+  struct output_t {
+    cgbn_mem_t<params::size> r1;
+    cgbn_mem_t<params::size> r2;
+  };
+
+  using bn_context_t = std::conditional_t<is_gpu,
+        cgbn_cuda_context_t<params::TPI>,
+        cgbn_gmp_context_t<params::TPI> >;
+  using bn_env_t = std::conditional_t<is_gpu,
+    cgbn_cuda_env_t<bn_context_t, params::size>,
+    cgbn_gmp_env_t<bn_context_t, params::size>
+  >;
+  using bn_t = typename bn_env_t::cgbn_t;
+  using wide_t = typename bn_env_t::cgbn_wide_t;
+  using bn_acc_t = typename bn_env_t::cgbn_accumulator_t;
+};
 
 typedef enum test_enum {
   test_set_1, test_swap_1, test_add_1, test_negate_1, test_sub_1,
@@ -28,14 +58,82 @@ typedef enum test_enum {
   test_accumulator_1, test_accumulator_2, test_binary_inverse_1, test_gcd_1, test_modular_inverse_1, test_modular_power_1,
   test_bn2mont_1, test_mont2bn_1, test_mont_mul_1, test_mont_sqr_1, test_mont_reduce_wide_1, test_barrett_div_1,
   test_barrett_rem_1, test_barrett_div_rem_1, test_barrett_div_wide_1, test_barrett_rem_wide_1, test_barrett_div_rem_wide_1
-} test_t;
+} TestId;
 
-template<test_t test, bool is_gpu, class params>
-struct implementation {
+template<TestId test_id, bool is_gpu, typename params>
+struct TestImpl {
   // TODO.perf make it inline
   __host__ __device__ static void run(
-      typename types<params>::input_t *inputs,
-      typename types<params>::output_t *outputs, int32_t instance);
+      typename TestTrait<params>::input_t *inputs,
+      typename TestTrait<params>::output_t *outputs, int32_t instance);
 };
 
+template<class T>
+struct CGBN1 : public testing::Test {
+  static constexpr uint32_t TPB=T::TPB;
+  static constexpr uint32_t MAX_ROTATION=T::MAX_ROTATION;
+  static constexpr uint32_t SHM_LIMIT=T::SHM_LIMIT;
+  static constexpr bool     CONSTANT_TIME=T::CONSTANT_TIME;
+  
+  static constexpr uint32_t BITS=T::BITS;
+  static constexpr uint32_t TPI=T::TPI;
 
+  static constexpr uint32_t size=T::BITS;
+};
+TYPED_TEST_SUITE_P(CGBN1);
+
+template<class T>
+struct CGBN2 : public testing::Test {
+  static constexpr uint32_t TPB=T::TPB;
+  static constexpr uint32_t MAX_ROTATION=T::MAX_ROTATION;
+  static constexpr uint32_t SHM_LIMIT=T::SHM_LIMIT;
+  static constexpr bool     CONSTANT_TIME=T::CONSTANT_TIME;
+
+  static constexpr uint32_t BITS=T::BITS;
+  static constexpr uint32_t TPI=T::TPI;
+
+  static constexpr uint32_t size=T::BITS;
+};
+TYPED_TEST_SUITE_P(CGBN2);
+
+template<class T>
+struct CGBN3 : public testing::Test {
+  static constexpr uint32_t TPB=T::TPB;
+  static constexpr uint32_t MAX_ROTATION=T::MAX_ROTATION;
+  static constexpr uint32_t SHM_LIMIT=T::SHM_LIMIT;
+  static constexpr bool     CONSTANT_TIME=T::CONSTANT_TIME;
+
+  static constexpr uint32_t BITS=T::BITS;
+  static constexpr uint32_t TPI=T::TPI;
+
+  static constexpr uint32_t size=T::BITS;
+};
+TYPED_TEST_SUITE_P(CGBN3);
+
+template<class T>
+struct CGBN4 : public testing::Test {
+  static constexpr uint32_t TPB=T::TPB;
+  static constexpr uint32_t MAX_ROTATION=T::MAX_ROTATION;
+  static constexpr uint32_t SHM_LIMIT=T::SHM_LIMIT;
+  static constexpr bool     CONSTANT_TIME=T::CONSTANT_TIME;
+
+  static constexpr uint32_t BITS=T::BITS;
+  static constexpr uint32_t TPI=T::TPI;
+
+  static constexpr uint32_t size=T::BITS;
+};
+TYPED_TEST_SUITE_P(CGBN4);
+
+template<class T>
+struct CGBN5 : public testing::Test {
+  static constexpr uint32_t TPB=T::TPB;
+  static constexpr uint32_t MAX_ROTATION=T::MAX_ROTATION;
+  static constexpr uint32_t SHM_LIMIT=T::SHM_LIMIT;
+  static constexpr bool     CONSTANT_TIME=T::CONSTANT_TIME;
+
+  static constexpr uint32_t BITS=T::BITS;
+  static constexpr uint32_t TPI=T::TPI;
+
+  static constexpr uint32_t size=T::BITS;
+};
+TYPED_TEST_SUITE_P(CGBN5);

@@ -1,7 +1,6 @@
 #pragma once
 #include <gmp.h>
 
-#include "types.h"
 #include "sizes.h"
 #include "testcase_common.cuh"
 
@@ -102,19 +101,18 @@ hard_random_words(uint32_t *x, uint32_t count, gmp_randstate_t state) {
   }
 }
 
-
-template<test_t test_id, typename test_param, typename input_ty, typename output_ty>
+template<TestId test_id, typename test_param, typename input_ty, typename output_ty>
 __global__ void
 gpu_kernel(input_ty *inputs, output_ty *outputs, uint32_t count) {
-  implementation<test_id, true, test_param> impl;
+  TestImpl<test_id, true, test_param> impl;
   int32_t inst_id=(blockIdx.x * blockDim.x + threadIdx.x)/test_param::TPI;
   if(inst_id>=count) return;
   impl.run(inputs, outputs, inst_id); }
 
-template<test_t test_id, typename test_param>
+template<TestId test_id, typename test_param>
 class TestContext {
-  using input_ty = typename types<test_param>::input_t;
-  using output_ty = typename types<test_param>::output_t;
+  using input_ty = typename TestTrait<test_param>::input_t;
+  using output_ty =typename TestTrait<test_param>::output_t;
   gmp_randstate_t  _state;
   uint32_t         _seed=0;
   static constexpr
@@ -165,21 +163,14 @@ class TestContext {
     uint32_t TPB=(test_param::TPB==0) ? 128 : test_param::TPB;
     uint32_t TPI=test_param::TPI, IPB=TPB/TPI;
     uint32_t blocks=(_count+IPB+1)/IPB;
-    printf("instantiated impl<gpu> object\n");
     gpu_kernel<test_id, test_param><<<blocks, TPB>>>(inputs, outputs, _count);
     $CUDA_CHECK(cudaGetLastError());
   }
   void cpu_run(input_ty *inputs, output_ty *outputs) {
-    printf("input ptr is %lu\n", reinterpret_cast<uintptr_t>(inputs));
-    printf("output ptr is %lu\n", reinterpret_cast<uintptr_t>(outputs));
-    printf("count is %u\n", _count);
-    implementation<test_id, false, test_param> impl;
-    printf("instantiated impl<cpu> object\n");
-    // #pragma omp parallel for
+    TestImpl<test_id, false, test_param> impl;
+    #pragma omp parallel for
     for(int index=0; index<_count; index++)  {
-      impl.run(inputs, outputs, index);
-    }
-    printf("done\n");
+      impl.run(inputs, outputs, index); }
   }
 
 public:
@@ -187,6 +178,10 @@ public:
     _count = test_param::size>1024 ?
       count*(1024*1024/test_param::size)/1024 :
       count;
+  }
+  ~TestContext() {
+    if (_cpu_data) free(_cpu_data);
+    if (_gpu_data) $CUDA_CHECK(cudaFree(_gpu_data));
   }
   bool operator ()() {
     input_ty  *cpu_inputs, *gpu_inputs;
