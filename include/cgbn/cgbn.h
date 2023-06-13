@@ -99,14 +99,18 @@ using cgbn_context_t = typename _cgbn_context_infer<tpi, params, is_gpu>::type;
   #endif
 #endif
 #include "cgbn_cuda.h"
+#ifndef CGBN_NO_GMP
 #include "cgbn_mpz.h"
 
-// Put this in test code ?
 template<typename ctx_ty, uint32_t bits> // TODO use variadic template for more args ?
 using cgbn_env_t = std::conditional_t<ctx_ty::is_gpu,
   cgbn_cuda_env_t<ctx_ty, bits>,
   cgbn_gmp_env_t<ctx_ty, bits>
 >;
+#else
+template<typename ctx_ty, uint32_t bits, std::enable_if_t<ctx_ty::is_gpu,bool> = true >
+using cgbn_env_t = cgbn_cuda_env_t<ctx_ty, bits>;
+#endif
 
 // TODO.feat impl this
 #if 0

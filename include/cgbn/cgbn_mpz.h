@@ -25,6 +25,8 @@ IN THE SOFTWARE.
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <gmp.h>
+
 /*
 #if !defined(__CUDACC__)
   typedef struct {uint32_t x; uint32_t y; uint32_t z;} dim3;
