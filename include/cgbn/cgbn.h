@@ -31,13 +31,14 @@ IN THE SOFTWARE.
 #include <stdlib.h>
 #include <cuda.h>
 #include <type_traits>
+#elif defined(CGBN_RTC_HAVE_STDLIB)
+// pass
 #else
-namespace std {
 typedef int int32_t;
 typedef long long int64_t;
 typedef unsigned int uint32_t;
 typedef unsigned long long uint64_t;
-
+namespace std {
 template<bool B, class T = void> struct enable_if {};
 template<class T>                struct enable_if<true, T> { typedef T type; };
 #if __cplusplus >= 201402L
@@ -107,17 +108,20 @@ using cgbn_context_t = typename _cgbn_context_infer<tpi, params, is_gpu>::type;
   #endif
 #endif
 #include "cgbn_cuda.h"
-#ifndef CGBN_NO_GMP
-#include "cgbn_mpz.h"
+#if (defined(CGBN_NO_GMP) || defined(__CUDACC_RTC__))
 
+template<typename ctx_ty, uint32_t bits, std::enable_if_t<ctx_ty::is_gpu,bool> = true >
+using cgbn_env_t = cgbn_cuda_env_t<ctx_ty, bits>;
+
+#else
+
+#include "cgbn_mpz.h"
 template<typename ctx_ty, uint32_t bits> // TODO use variadic template for more args ?
 using cgbn_env_t = std::conditional_t<ctx_ty::is_gpu,
   cgbn_cuda_env_t<ctx_ty, bits>,
   cgbn_gmp_env_t<ctx_ty, bits>
 >;
-#else
-template<typename ctx_ty, uint32_t bits, std::enable_if_t<ctx_ty::is_gpu,bool> = true >
-using cgbn_env_t = cgbn_cuda_env_t<ctx_ty, bits>;
+
 #endif
 
 // TODO.feat impl this
