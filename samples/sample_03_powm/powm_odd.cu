@@ -32,7 +32,7 @@ IN THE SOFTWARE.
 
 // For this example, there are quite a few template parameters that are used to generate the actual code.
 // In order to simplify passing many parameters, we use the same approach as the CGBN library, which is to
-// create a container class with static constants and then pass the class.
+// create a container class with static constexprants and then pass the class.
 
 // The CGBN context uses the following three parameters:
 //   TBP             - threads per block (zero means to use the blockDim.x)
@@ -49,21 +49,21 @@ template<uint32_t tpi, uint32_t bits, uint32_t window_bits>
 class powm_params_t {
   public:
   // parameters used by the CGBN context
-  static const uint32_t TPB=0;                     // get TPB from blockDim.x  
-  static const uint32_t MAX_ROTATION=4;            // good default value
-  static const uint32_t SHM_LIMIT=0;               // no shared mem available
-  static const bool     CONSTANT_TIME=false;       // constant time implementations aren't available yet
+  static constexpr uint32_t TPB=0;                     // get TPB from blockDim.x  
+  static constexpr uint32_t MAX_ROTATION=4;            // good default value
+  static constexpr uint32_t SHM_LIMIT=0;               // no shared mem available
+  static constexpr bool     CONSTANT_TIME=false;       // constant time implementations aren't available yet
   
   // parameters used locally in the application
-  static const uint32_t TPI=tpi;                   // threads per instance
-  static const uint32_t BITS=bits;                 // instance size
-  static const uint32_t WINDOW_BITS=window_bits;   // window size
+  static constexpr uint32_t TPI=tpi;                   // threads per instance
+  static constexpr uint32_t BITS=bits;                 // instance size
+  static constexpr uint32_t WINDOW_BITS=window_bits;   // window size
 };
 
 template<class params>
 class powm_odd_t {
   public:
-  static const uint32_t window_bits=params::WINDOW_BITS;  // used a lot, give it an instance variable
+  static constexpr uint32_t window_bits=params::WINDOW_BITS;  // used a lot, give it an instance variable
   
   // define the instance structure
   typedef struct {

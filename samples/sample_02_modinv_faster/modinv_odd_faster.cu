@@ -96,8 +96,8 @@ void verify_results(instance_t *instances, uint32_t count) {
 }
 
 // helpful typedefs for the kernel
-typedef cgbn_context_t<TPI>         context_t;
-typedef cgbn_env_t<context_t, BITS> env_t;
+using context_t = cgbn_context_t<TPI, cgbn_cuda_default_parameters_t>;
+using env_t = cgbn_env_t<context_t, BITS>;
 
 // the actual kernel
 __global__ void kernel_modinv_odd(cgbn_error_report_t *report, instance_t *instances, uint32_t count) {

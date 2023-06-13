@@ -5,6 +5,7 @@ enable_testing()
 # opts
 option(CGBN_BUILD_TESTS "build unit tests" ON)
 option(CGBN_BUILD_BENCHMARK "build benchmark" ON)
+option(CGBN_BUILD_SAMPLES "build sample codes" OFF)
 option(CGBN_USE_OPENMP "use OpenMP" ON)
 set(CGBN_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 # setup cuda
@@ -65,8 +66,23 @@ if(${CGBN_BUILD_BENCHMARK})
 
   if(${CGBN_USE_OPENMP})
     target_link_libraries(gmp_bench PRIVATE OpenMP::OpenMP_CXX)
+  else()
+    error("OpenMP is REQUIRED for benchmark. You may as well add -D CGBN_BUILD_BENCHMARK=OFF to cmake")
   endif()
 endif()
+
+if(${CGBN_BUILD_SAMPLES})
+  set(CGBN_SAMPLES_DIR "${PROJECT_SOURCE_DIR}/samples")
+  file(GLOB SAMPLE_DIRS "${CGBN_SAMPLES_DIR}/sample_*" LIST_DIRECTORIES TRUE)
+  foreach(__subdir__ ${SAMPLE_DIRS})
+    get_filename_component(_sample_target_ "${__subdir__}" NAME)
+    file(GLOB_RECURSE __srclist__ "${__subdir__}/*.cu")
+    cuda_add_executable(${_sample_target_} ${__srclist__})
+    target_include_directories(${_sample_target_} PRIVATE "${CGBN_INCLUDE_DIR}")
+    target_link_libraries(${_sample_target_} PRIVATE gmp)
+  endforeach()
+endif()
+message("sample dirs are ${SAMPLE_DIRS}")
 
 # samples
 # TODO
