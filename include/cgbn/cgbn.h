@@ -509,7 +509,7 @@ cgbn_store_shorter(env_t env, uint32_t *dst, const typename env_t::cgbn_t &src, 
 
 /* load/store to local memory */
 template<class env_t> CGBN_API_INLINE void
-cgbn_load(env_t env, typename env_t::cgbn_t &r, typename env_t::cgbn_local *const address) {
+cgbn_load(env_t env, typename env_t::cgbn_t &r, typename env_t::cgbn_local_t *const address) {
   env.load(r, address);
 }
 
