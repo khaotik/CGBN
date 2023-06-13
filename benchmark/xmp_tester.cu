@@ -83,7 +83,7 @@ class xmp_tester {
     cgbn_mem_t<bits> r;
   } x_instance_t;
   
-  typedef cgbn_context_t<tpi>                context_t;
+  using context_t =  cgbn_context_t<tpi, cgbn_cuda_default_parameters_t>;
   typedef cgbn_env_t<context_t, bits>        env_t;
   typedef typename env_t::cgbn_t             bn_t;
   typedef typename env_t::cgbn_local_t       bn_local_t;

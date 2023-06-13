@@ -12,3 +12,9 @@ Minor update (June 2021)
 
 *  Added build tags for turing and ampere
 *  Fixed the depricated gtest TEST_CASE_P warnings
+
+Refactor and QoL (fork repo only) (July 2023)
+
+* CMake support
+* Refactor unit tests into several compilation unit
+* New methods `all_equals_ui32` `all_set_ui32`

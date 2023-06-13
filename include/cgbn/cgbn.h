@@ -84,7 +84,7 @@ struct cgbn_mem_t {
 
 template<uint32_t tpi, typename params, bool is_gpu> 
 struct _cgbn_context_infer;
-template<uint32_t tpi, typename params, bool is_gpu> 
+template<uint32_t tpi, typename params, bool is_gpu=true> 
 using cgbn_context_t = typename _cgbn_context_infer<tpi, params, is_gpu>::type;
 
 #if defined(__CUDACC__) || defined(__CUDACC_RTC__)
