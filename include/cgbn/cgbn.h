@@ -25,18 +25,26 @@ IN THE SOFTWARE.
 #pragma once
 #define CGBN_API_INLINE __host__ __device__ __forceinline__
 
-#include <type_traits>
 
 #ifndef __CUDACC_RTC__
 #include <stdio.h>
 #include <stdlib.h>
 #include <cuda.h>
+#include <type_traits>
 #else
+namespace std {
 typedef int int32_t;
 typedef long long int64_t;
 typedef unsigned int uint32_t;
 typedef unsigned long long uint64_t;
+
+template<bool B, class T = void> struct enable_if {};
+template<class T>                struct enable_if<true, T> { typedef T type; };
+#if __cplusplus >= 201402L
+template< bool B, class T = void > using enable_if_t = typename enable_if<B,T>::type;
 #endif
+} // namespace std
+#endif // ifdef __CUDACC_RTC__
 
 /* basic types */
 typedef enum {
