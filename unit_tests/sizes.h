@@ -21,203 +21,212 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+#pragma once
+#include <stdint.h>
+#include "testcase_common.cuh"
 
-class size32t4 {
-  public:
-  static const uint32_t TPB=0;
-  static const uint32_t MAX_ROTATION=4;
-  static const uint32_t SHM_LIMIT=0;   // SHM_LIMIT or SHARED_LIMIT
-  static const bool     CONSTANT_TIME=false;
+struct size32t4 {
+  static constexpr uint32_t TPB=0;
+  static constexpr uint32_t MAX_ROTATION=4;
+  static constexpr uint32_t SHM_LIMIT=0;   // SHM_LIMIT or SHARED_LIMIT
+  static constexpr bool     CONSTANT_TIME=false;
 
-  static const uint32_t BITS=32;
-  static const uint32_t TPI=4;
+  static constexpr uint32_t BITS=32;
+  static constexpr uint32_t TPI=4;
 };
 
-class size64t4 {
-  public:
-  static const uint32_t TPB=0;
-  static const uint32_t MAX_ROTATION=4;
-  static const uint32_t SHM_LIMIT=0;   // SHM_LIMIT or SHARED_LIMIT
-  static const bool     CONSTANT_TIME=false;
+struct size64t4 {
+  static constexpr uint32_t TPB=0;
+  static constexpr uint32_t MAX_ROTATION=4;
+  static constexpr uint32_t SHM_LIMIT=0;   // SHM_LIMIT or SHARED_LIMIT
+  static constexpr bool     CONSTANT_TIME=false;
 
-  static const uint32_t BITS=64;
-  static const uint32_t TPI=4;
+  static constexpr uint32_t BITS=64;
+  static constexpr uint32_t TPI=4;
 };
 
-class size96t4 {
-  public:
-  static const uint32_t TPB=0;
-  static const uint32_t MAX_ROTATION=4;
-  static const uint32_t SHM_LIMIT=0;   // SHM_LIMIT or SHARED_LIMIT
-  static const bool     CONSTANT_TIME=false;
+struct size96t4 {
+  static constexpr uint32_t TPB=0;
+  static constexpr uint32_t MAX_ROTATION=4;
+  static constexpr uint32_t SHM_LIMIT=0;   // SHM_LIMIT or SHARED_LIMIT
+  static constexpr bool     CONSTANT_TIME=false;
 
-  static const uint32_t BITS=96;
-  static const uint32_t TPI=4;
+  static constexpr uint32_t BITS=96;
+  static constexpr uint32_t TPI=4;
 };
 
-class size128t4 {
-  public:
-  static const uint32_t TPB=0;
-  static const uint32_t MAX_ROTATION=4;
-  static const uint32_t SHM_LIMIT=0;   // SHM_LIMIT or SHARED_LIMIT
-  static const bool     CONSTANT_TIME=false;
+struct size128t4 {
+  static constexpr uint32_t TPB=0;
+  static constexpr uint32_t MAX_ROTATION=4;
+  static constexpr uint32_t SHM_LIMIT=0;   // SHM_LIMIT or SHARED_LIMIT
+  static constexpr bool     CONSTANT_TIME=false;
 
-  static const uint32_t BITS=128;
-  static const uint32_t TPI=4;
+  static constexpr uint32_t BITS=128;
+  static constexpr uint32_t TPI=4;
 };
 
-class size192t8 {
-  public:
-  static const uint32_t TPB=0;
-  static const uint32_t MAX_ROTATION=4;
-  static const uint32_t SHM_LIMIT=0;
-  static const bool     CONSTANT_TIME=false;
+struct size192t8 {
+  static constexpr uint32_t TPB=0;
+  static constexpr uint32_t MAX_ROTATION=4;
+  static constexpr uint32_t SHM_LIMIT=0;
+  static constexpr bool     CONSTANT_TIME=false;
 
-  static const uint32_t BITS=192;
-  static const uint32_t TPI=8;
+  static constexpr uint32_t BITS=192;
+  static constexpr uint32_t TPI=8;
 };
 
-class size256t8 {
-  public:
-  static const uint32_t TPB=0;
-  static const uint32_t MAX_ROTATION=4;
-  static const uint32_t SHM_LIMIT=0;   // SHM_LIMIT or SHARED_LIMIT
-  static const bool     CONSTANT_TIME=false;
+struct size256t8 {
+  static constexpr uint32_t TPB=0;
+  static constexpr uint32_t MAX_ROTATION=4;
+  static constexpr uint32_t SHM_LIMIT=0;   // SHM_LIMIT or SHARED_LIMIT
+  static constexpr bool     CONSTANT_TIME=false;
 
-  static const uint32_t BITS=256;
-  static const uint32_t TPI=8;
+  static constexpr uint32_t BITS=256;
+  static constexpr uint32_t TPI=8;
 };
 
-class size288t8 {
-  public:
-  // required parameters for a cgbn_parameters class
-  static const uint32_t TPB=0;
-  static const uint32_t MAX_ROTATION=4;
-  static const uint32_t SHM_LIMIT=0;
-  static const bool     CONSTANT_TIME=false;
+struct size288t8 {
+  static constexpr uint32_t TPB=0;
+  static constexpr uint32_t MAX_ROTATION=4;
+  static constexpr uint32_t SHM_LIMIT=0;
+  static constexpr bool     CONSTANT_TIME=false;
 
-  static const uint32_t BITS=288;
-  static const uint32_t TPI=8;
+  static constexpr uint32_t BITS=288;
+  static constexpr uint32_t TPI=8;
 };
 
-class size512t8 {
-  public:
-  static const uint32_t TPB=0;
-  static const uint32_t MAX_ROTATION=4;
-  static const uint32_t SHM_LIMIT=0;
-  static const bool     CONSTANT_TIME=false;
+struct size512t8 {
+  static constexpr uint32_t TPB=0;
+  static constexpr uint32_t MAX_ROTATION=4;
+  static constexpr uint32_t SHM_LIMIT=0;
+  static constexpr bool     CONSTANT_TIME=false;
 
-  static const uint32_t BITS=512;
-  static const uint32_t TPI=8;
+  static constexpr uint32_t BITS=512;
+  static constexpr uint32_t TPI=8;
 };
 
-class size1024t8 {
-  public:
-  // required parameters for a cgbn_parameters class
-  static const uint32_t TPB=0;
-  static const uint32_t MAX_ROTATION=4;
-  static const uint32_t SHM_LIMIT=0;
-  static const bool     CONSTANT_TIME=false;
+struct size1024t8 {
+  static constexpr uint32_t TPB=0;
+  static constexpr uint32_t MAX_ROTATION=4;
+  static constexpr uint32_t SHM_LIMIT=0;
+  static constexpr bool     CONSTANT_TIME=false;
 
-  static const uint32_t BITS=1024;
-  static const uint32_t TPI=8;
+  static constexpr uint32_t BITS=1024;
+  static constexpr uint32_t TPI=8;
 };
 
-class size1024t16 {
-  public:
-  // required parameters for a cgbn_parameters class
-  static const uint32_t TPB=0;
-  static const uint32_t MAX_ROTATION=4;
-  static const uint32_t SHM_LIMIT=0;
-  static const bool     CONSTANT_TIME=false;
+struct size1024t16 {
+  static constexpr uint32_t TPB=0;
+  static constexpr uint32_t MAX_ROTATION=4;
+  static constexpr uint32_t SHM_LIMIT=0;
+  static constexpr bool     CONSTANT_TIME=false;
 
-  static const uint32_t BITS=1024;
-  static const uint32_t TPI=16;
+  static constexpr uint32_t BITS=1024;
+  static constexpr uint32_t TPI=16;
 };
 
-class size1024t32 {
-  public:
-  // required parameters for a cgbn_parameters class
-  static const uint32_t TPB=0;
-  static const uint32_t MAX_ROTATION=4;
-  static const uint32_t SHM_LIMIT=0;
-  static const bool     CONSTANT_TIME=false;
+struct size1024t32 {
+  static constexpr uint32_t TPB=0;
+  static constexpr uint32_t MAX_ROTATION=4;
+  static constexpr uint32_t SHM_LIMIT=0;
+  static constexpr bool     CONSTANT_TIME=false;
 
-  static const uint32_t BITS=1024;
-  static const uint32_t TPI=32;
+  static constexpr uint32_t BITS=1024;
+  static constexpr uint32_t TPI=32;
 };
 
-class size2048t32 {
-  public:
-  // required parameters for a cgbn_parameters class
-  static const uint32_t TPB=0;
-  static const uint32_t MAX_ROTATION=4;
-  static const uint32_t SHM_LIMIT=0;
-  static const bool     CONSTANT_TIME=false;
+struct size2048t32 {
+  static constexpr uint32_t TPB=0;
+  static constexpr uint32_t MAX_ROTATION=4;
+  static constexpr uint32_t SHM_LIMIT=0;
+  static constexpr bool     CONSTANT_TIME=false;
 
-  static const uint32_t BITS=2048;
-  static const uint32_t TPI=32;
+  static constexpr uint32_t BITS=2048;
+  static constexpr uint32_t TPI=32;
 };
 
-class size3072t32 {
-  public:
-  // required parameters for a cgbn_parameters class
-  static const uint32_t TPB=0;
-  static const uint32_t MAX_ROTATION=4;
-  static const uint32_t SHM_LIMIT=0;
-  static const bool     CONSTANT_TIME=false;
+struct size3072t32 {
+  static constexpr uint32_t TPB=0;
+  static constexpr uint32_t MAX_ROTATION=4;
+  static constexpr uint32_t SHM_LIMIT=0;
+  static constexpr bool     CONSTANT_TIME=false;
 
-  static const uint32_t BITS=3072;
-  static const uint32_t TPI=32;
+  static constexpr uint32_t BITS=3072;
+  static constexpr uint32_t TPI=32;
 };
 
-class size4096t32 {
-  public:
-  // required parameters for a cgbn_parameters class
-  static const uint32_t TPB=0;
-  static const uint32_t MAX_ROTATION=4;
-  static const uint32_t SHM_LIMIT=0;
-  static const bool     CONSTANT_TIME=false;
+struct size4096t32 {
+  static constexpr uint32_t TPB=0;
+  static constexpr uint32_t MAX_ROTATION=4;
+  static constexpr uint32_t SHM_LIMIT=0;
+  static constexpr bool     CONSTANT_TIME=false;
 
-  static const uint32_t BITS=4096;
-  static const uint32_t TPI=32;
+  static constexpr uint32_t BITS=4096;
+  static constexpr uint32_t TPI=32;
 };
 
-class size8192t32 {
-  public:
-  // required parameters for a cgbn_parameters class
-  static const uint32_t TPB=0;
-  static const uint32_t MAX_ROTATION=4;
-  static const uint32_t SHM_LIMIT=0;
-  static const bool     CONSTANT_TIME=false;
+struct size8192t32 {
+  static constexpr uint32_t TPB=0;
+  static constexpr uint32_t MAX_ROTATION=4;
+  static constexpr uint32_t SHM_LIMIT=0;
+  static constexpr bool     CONSTANT_TIME=false;
 
-  static const uint32_t BITS=8192;
-  static const uint32_t TPI=32;
+  static constexpr uint32_t BITS=8192;
+  static constexpr uint32_t TPI=32;
 };
 
-class size16384t32 {
-  public:
-  // required parameters for a cgbn_parameters class
-  static const uint32_t TPB=0;
-  static const uint32_t MAX_ROTATION=4;
-  static const uint32_t SHM_LIMIT=0;
-  static const bool     CONSTANT_TIME=false;
+struct size16384t32 {
+  static constexpr uint32_t TPB=0;
+  static constexpr uint32_t MAX_ROTATION=4;
+  static constexpr uint32_t SHM_LIMIT=0;
+  static constexpr bool     CONSTANT_TIME=false;
 
-  static const uint32_t BITS=16384;
-  static const uint32_t TPI=32;
+  static constexpr uint32_t BITS=16384;
+  static constexpr uint32_t TPI=32;
 };
 
-class size32768t32 {
-  public:
-  // required parameters for a cgbn_parameters class
-  static const uint32_t TPB=0;
-  static const uint32_t MAX_ROTATION=4;
-  static const uint32_t SHM_LIMIT=0;
-  static const bool     CONSTANT_TIME=false;
+struct size32768t32 {
+  static constexpr uint32_t TPB=0;
+  static constexpr uint32_t MAX_ROTATION=4;
+  static constexpr uint32_t SHM_LIMIT=0;
+  static constexpr bool     CONSTANT_TIME=false;
 
-  static const uint32_t BITS=32768;
-  static const uint32_t TPI=32;
+  static constexpr uint32_t BITS=32768;
+  static constexpr uint32_t TPI=32;
 };
 
-
-
+#ifdef FULL_TEST
+using test_sizes = testing::Types<
+  size32t4,
+  size64t4,
+  size96t4,
+  size128t4,
+  size192t8,
+  size256t8,
+  size288t8,
+  size512t8,
+  size1024t8,
+  size1024t16,
+  size1024t32,
+  size2048t32,
+  size3072t32,
+  size4096t32,
+  size8192t32,
+  size16384t32,
+  size32768t32,
+>;
+#else
+using test_sizes = testing::Types<
+  size32t4,
+  size128t4,
+  size192t8,
+  size256t8,
+  size288t8,
+  size512t8,
+  size1024t8,
+  size2048t32,
+  size3072t32,
+  size4096t32,
+  size8192t32,
+>;
+#endif

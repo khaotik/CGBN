@@ -25,6 +25,8 @@ IN THE SOFTWARE.
 #pragma once
 #define CGBN_API_INLINE __host__ __device__ __forceinline__
 
+#include <type_traits>
+
 #ifndef __CUDACC_RTC__
 #include <stdio.h>
 #include <stdlib.h>
@@ -60,10 +62,10 @@ typedef struct {
 } cgbn_error_report_t;
 
 typedef enum {
-  cgbn_no_checks,       /* disable error checking - improves performance */
-  cgbn_report_monitor,  /* writes errors to the reporter object, no other actions */
-  cgbn_print_monitor,   /* writes errors to the reporter and prints the error to stdout */
-  cgbn_halt_monitor,    /* writes errors to the reporter and halts */
+  cgbn_no_checks = 0,       /* disable error checking - improves performance */
+  cgbn_report_monitor = 1,  /* writes errors to the reporter object, no other actions */
+  cgbn_print_monitor = 2,   /* writes errors to the reporter and prints the error to stdout */
+  cgbn_halt_monitor = 15,    /* writes errors to the reporter and halts */
 } cgbn_monitor_t;
 
 #ifndef __CUDACC_RTC__
@@ -72,11 +74,20 @@ cudaError_t cgbn_error_report_free(cgbn_error_report_t *report);
 bool        cgbn_error_report_check(cgbn_error_report_t *report);
 void        cgbn_error_report_reset(cgbn_error_report_t *report);
 const char *cgbn_error_string(cgbn_error_report_t *report);
-
 #include "cgbn.cu"
 #endif
 
-#if defined(__CUDA_ARCH__)
+template<uint32_t bits>
+struct cgbn_mem_t {
+  uint32_t _limbs[(bits+31)/32];
+};
+
+template<uint32_t tpi, typename params, bool is_gpu> 
+struct _cgbn_context_infer;
+template<uint32_t tpi, typename params, bool is_gpu> 
+using cgbn_context_t = typename _cgbn_context_infer<tpi, params, is_gpu>::type;
+
+#if defined(__CUDACC__) || defined(__CUDACC_RTC__)
   #if !defined(XMP_IMAD) && !defined(XMP_XMAD) && !defined(XMP_WMAD)
      #if __CUDA_ARCH__<500
        #define XMP_IMAD
@@ -86,104 +97,76 @@ const char *cgbn_error_string(cgbn_error_report_t *report);
        #define XMP_WMAD
      #endif
   #endif
-  #include "cgbn_cuda.h"
-#elif defined(__GMP_H__)
-  #include "cgbn_mpz.h"
-#else
+#endif
+#include "cgbn_cuda.h"
+#include "cgbn_mpz.h"
+
+// Put this in test code ?
+template<typename ctx_ty, uint32_t bits> // TODO use variadic template for more args ?
+using cgbn_env_t = std::conditional_t<ctx_ty::is_gpu,
+  cgbn_cuda_env_t<ctx_ty, bits>,
+  cgbn_gmp_env_t<ctx_ty, bits>
+>;
+
+// TODO.feat impl this
+#if 0
   #include "cgbn_cpu.h"
 #endif
 
-
 template<class env_t, class source_cgbn_t> CGBN_API_INLINE void
 cgbn_set(env_t env, typename env_t::cgbn_t &r, const source_cgbn_t &a) {
-  env.set(r, a);
-}
-
+  env.set(r, a); }
 template<class env_t>
 __host__ __device__ __forceinline__ void cgbn_swap(env_t env, typename env_t::cgbn_t &r, typename env_t::cgbn_t &a) {
-  env.swap(r, a);
-}
-
+  env.swap(r, a); }
 template<class env_t> CGBN_API_INLINE int32_t
 cgbn_add(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
-  return env.add(r, a, b);
-}
-
+  return env.add(r, a, b); }
 template<class env_t> CGBN_API_INLINE int32_t
 cgbn_sub(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
-  return env.sub(r, a, b);
-}
-
+  return env.sub(r, a, b); }
 template<class env_t> CGBN_API_INLINE int32_t
 cgbn_negate(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a) {
-  return env.negate(r, a);
-}
-
+  return env.negate(r, a); }
 template<class env_t> CGBN_API_INLINE void
 cgbn_mul(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
-  env.mul(r, a, b);
-}
-
+  env.mul(r, a, b); }
 template<class env_t> CGBN_API_INLINE void
 cgbn_mul_high(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
-  env.mul_high(r, a, b);
-}
-
+  env.mul_high(r, a, b); }
 template<class env_t> CGBN_API_INLINE void
 cgbn_sqr(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a) {
-  env.sqr(r, a);
-}
-
+  env.sqr(r, a); }
 template<class env_t> CGBN_API_INLINE void
 cgbn_sqr_high(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a) {
-  env.sqr_high(r, a);
-}
-
+  env.sqr_high(r, a); }
 template<class env_t> CGBN_API_INLINE void
 cgbn_div(env_t env, typename env_t::cgbn_t &q, const typename env_t::cgbn_t &num, const typename env_t::cgbn_t &denom) {
-  env.div(q, num, denom);
-}
-
+  env.div(q, num, denom); }
 template<class env_t> CGBN_API_INLINE void
 cgbn_rem(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &num, const typename env_t::cgbn_t &denom) {
-  env.rem(r, num, denom);
-}
-
+  env.rem(r, num, denom); }
 template<class env_t> CGBN_API_INLINE void
 cgbn_div_rem(env_t env, typename env_t::cgbn_t &q, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &num, const typename env_t::cgbn_t &denom) {
-  env.div_rem(q, r, num, denom);
-}
-
+  env.div_rem(q, r, num, denom); }
 template<class env_t> CGBN_API_INLINE void
 cgbn_sqrt(env_t env, typename env_t::cgbn_t &s, const typename env_t::cgbn_t &a) {
-  env.sqrt(s, a);
-}
-
+  env.sqrt(s, a); }
 template<class env_t> CGBN_API_INLINE void
 cgbn_sqrt_rem(env_t env, typename env_t::cgbn_t &s, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a) {
-  env.sqrt_rem(s, r, a);
-}
-
+  env.sqrt_rem(s, r, a); }
 template<class env_t> CGBN_API_INLINE bool
 cgbn_equals(env_t env, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
-  return env.equals(a, b);
-}
-
+  return env.equals(a, b); }
 template<class env_t> CGBN_API_INLINE int32_t
 cgbn_compare(env_t env, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
-  return env.compare(a, b);
-}
-
+  return env.compare(a, b); }
 template<class env_t> CGBN_API_INLINE void
 cgbn_extract_bits(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t start, const uint32_t len) {
-  env.extract_bits(r, a, start, len);
-}
-
+  env.extract_bits(r, a, start, len); }
 template<class env_t> CGBN_API_INLINE void
 cgbn_insert_bits(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t start, const uint32_t len, const typename env_t::cgbn_t &value) {
-  env.insert_bits(r, a, start, len, value);
-}
-
+  env.insert_bits(r, a, start, len, value); }
 
 /* ui32 arithmetic routines*/
 template<class env_t> CGBN_API_INLINE uint32_t
@@ -215,47 +198,38 @@ template<class env_t> CGBN_API_INLINE uint32_t
 cgbn_div_ui32(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t div) {
   return env.div_ui32(r, a, div);
 }
-
 template<class env_t> CGBN_API_INLINE uint32_t
 cgbn_rem_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t div) {
   return env.rem_ui32(a, div);
 }
-
 template<class env_t> CGBN_API_INLINE bool
 cgbn_equals_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t value) {
   return env.equals_ui32(a, value);
 }
-
 template<class env_t> CGBN_API_INLINE bool
 cgbn_all_equals_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t value) {
   return env.all_equals_ui32(a, value);
 }
-
 template<class env_t> CGBN_API_INLINE int32_t
 cgbn_compare_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t value) {
   return env.compare_ui32(a, value);
 }
-
 template<class env_t> CGBN_API_INLINE uint32_t
 cgbn_extract_bits_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t start, const uint32_t len) {
   return env.extract_bits_ui32(a, start, len);
 }
-
 template<class env_t> CGBN_API_INLINE void
 cgbn_insert_bits_ui32(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t start, const uint32_t len, const uint32_t value) {
   env.insert_bits_ui32(r, a, start, len, value);
 }
-
 template<class env_t> CGBN_API_INLINE uint32_t
 cgbn_binary_inverse_ui32(env_t env, const uint32_t n0) {
   return env.binary_inverse_ui32(n0);
 }
-
 template<class env_t> CGBN_API_INLINE uint32_t
 cgbn_gcd_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t value) {
   return env.gcd_ui32(a, value);
 }
-
 
 /* wide arithmetic routines */
 template<class env_t> CGBN_API_INLINE void

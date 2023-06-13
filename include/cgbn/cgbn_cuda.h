@@ -34,48 +34,39 @@ typedef enum {
   cgbn_grid_syncable
 } cgbn_syncable_t;
 
-class cgbn_default_parameters_t {
-  public:
-
-  static const uint32_t TPB=0;
-  static const uint32_t MAX_ROTATION=4;
-  static const uint32_t SHM_LIMIT=0;
-  static const bool     CONSTANT_TIME=false;
+struct cgbn_cuda_default_parameters_t {
+  static constexpr uint32_t TPB=0;
+  static constexpr uint32_t MAX_ROTATION=4;
+  static constexpr uint32_t SHM_LIMIT=0;
+  static constexpr bool     CONSTANT_TIME=false;
 };
 
 /* forward declarations */
 template<uint32_t tpi, class params>
-class cgbn_context_t;
+class cgbn_cuda_context_t;
 
 template<class context_t, uint32_t bits, cgbn_syncable_t syncable>
-class cgbn_env_t;
-
-template<uint32_t bits>
-struct cgbn_mem_t {
-  public:
-  uint32_t _limbs[(bits+31)/32];
-};
+class cgbn_cuda_env_t;
 
 /* main classes */
-template<uint32_t tpi, class params=cgbn_default_parameters_t>
-class cgbn_context_t {
-  public:
-  static const uint32_t TPB=params::TPB;
-  static const uint32_t TPI=tpi;
-  static const uint32_t MAX_ROTATION=params::MAX_ROTATION;
-  static const uint32_t SHM_LIMIT=params::SHM_LIMIT;
-  static const bool     CONSTANT_TIME=params::CONSTANT_TIME;
+template<uint32_t tpi, class params=cgbn_cuda_default_parameters_t>
+struct cgbn_cuda_context_t {
+  static constexpr uint32_t TPB = params::TPB;
+  static constexpr uint32_t TPI = tpi;
+  static constexpr uint32_t MAX_ROTATION = params::MAX_ROTATION;
+  static constexpr uint32_t SHM_LIMIT = params::SHM_LIMIT;
+  static constexpr bool     CONSTANT_TIME = params::CONSTANT_TIME;
+  static constexpr bool     is_gpu = true;
 
   const cgbn_monitor_t  _monitor;
   cgbn_error_report_t  *const _report;
   const int32_t         _instance;
   uint32_t             *_scratch;
 
-  public:
-  __device__ __forceinline__ cgbn_context_t();
-  __device__ __forceinline__ cgbn_context_t(cgbn_monitor_t type);
-  __device__ __forceinline__ cgbn_context_t(cgbn_monitor_t type, cgbn_error_report_t *report);
-  __device__ __forceinline__ cgbn_context_t(cgbn_monitor_t type, cgbn_error_report_t *report, uint32_t instance);
+  __device__ __forceinline__ cgbn_cuda_context_t();
+  __device__ __forceinline__ cgbn_cuda_context_t(cgbn_monitor_t type);
+  __device__ __forceinline__ cgbn_cuda_context_t(cgbn_monitor_t type, cgbn_error_report_t *report);
+  __device__ __forceinline__ cgbn_cuda_context_t(cgbn_monitor_t type, cgbn_error_report_t *report, uint32_t instance);
 
   __device__ __forceinline__ uint32_t *scratch() const;
   __device__ __forceinline__ bool      check_errors() const;
@@ -84,41 +75,39 @@ class cgbn_context_t {
   template<class env_t>
   __device__ __forceinline__ env_t env() {
     env_t env(*this);
-
-    return env;
-  }
-
+    return env; }
   template<uint32_t bits, cgbn_syncable_t syncable>
-  __device__ __forceinline__ cgbn_env_t<cgbn_context_t, bits, syncable> env() {
-    cgbn_env_t<cgbn_context_t, bits, syncable> env(*this);
-
-    return env;
-  }
+  __device__ __forceinline__ cgbn_cuda_env_t<cgbn_cuda_context_t, bits, syncable> env() {
+    cgbn_cuda_env_t<cgbn_cuda_context_t, bits, syncable> env(*this);
+    return env; }
 };
 
+template<uint32_t tpi, typename params>
+struct _cgbn_context_infer<tpi, params, true> {
+  using type = cgbn_cuda_context_t<tpi, params>; };
+
 template<class context_t, uint32_t bits, cgbn_syncable_t syncable=cgbn_instance_syncable>
-class cgbn_env_t {
-  public:
+struct cgbn_cuda_env_t {
 
   // bits must be divisible by 32
-  static const uint32_t        BITS=bits;
-  static const uint32_t        TPB=context_t::TPB;
-  static const uint32_t        TPI=context_t::TPI;
-  static const uint32_t        MAX_ROTATION=context_t::MAX_ROTATION;
-  static const uint32_t        SHM_LIMIT=context_t::SHM_LIMIT;
-  static const bool            CONSTANT_TIME=context_t::CONSTANT_TIME;
-  static const cgbn_syncable_t SYNCABLE=syncable;
+  static constexpr uint32_t        BITS=bits;
+  static constexpr uint32_t        TPB=context_t::TPB;
+  static constexpr uint32_t        TPI=context_t::TPI;
+  static constexpr uint32_t        MAX_ROTATION=context_t::MAX_ROTATION;
+  static constexpr uint32_t        SHM_LIMIT=context_t::SHM_LIMIT;
+  static constexpr bool            CONSTANT_TIME=context_t::CONSTANT_TIME;
+  static constexpr cgbn_syncable_t SYNCABLE=syncable;
 
-  static const uint32_t        LIMBS=(bits/32+TPI-1)/TPI;
-  static const uint32_t        LOCAL_LIMBS=((bits+32)/64+TPI-1)/TPI*TPI;
-  static const uint32_t        UNPADDED_BITS=TPI*LIMBS*32;
-  static const uint32_t        PADDING=bits/32%TPI;
-  static const uint32_t        PAD_THREAD=(BITS/32)/LIMBS;
-  static const uint32_t        PAD_LIMB=(BITS/32)%LIMBS;
+  static constexpr uint32_t        LIMBS=(bits/32+TPI-1)/TPI;
+  static constexpr uint32_t        LOCAL_LIMBS=((bits+32)/64+TPI-1)/TPI*TPI;
+  static constexpr uint32_t        UNPADDED_BITS=TPI*LIMBS*32;
+  static constexpr uint32_t        PADDING=bits/32%TPI;
+  static constexpr uint32_t        PAD_THREAD=(BITS/32)/LIMBS;
+  static constexpr uint32_t        PAD_LIMB=(BITS/32)%LIMBS;
 
   struct cgbn_t {
     public:
-    typedef cgbn_env_t parent_env_t;
+    typedef cgbn_cuda_env_t parent_env_t;
 
     uint32_t _limbs[LIMBS];
   };
@@ -139,7 +128,7 @@ class cgbn_env_t {
 
   const context_t &_context;
 
-  __device__ __forceinline__ cgbn_env_t(const context_t &context);
+  __device__ __forceinline__ cgbn_cuda_env_t(const context_t &context);
 
   /* size conversion */
   template<typename source_cgbn_t>

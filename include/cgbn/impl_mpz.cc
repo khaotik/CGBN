@@ -23,31 +23,31 @@ IN THE SOFTWARE.
 ***/
 
 /****************************************************************************************************************
- * cgbn_context_t implementation using GMP
+ * cgbn_gmp_context_t implementation using GMP
  ****************************************************************************************************************/
 template<uint32_t tpi, class params>
-cgbn_context_t<tpi, params>::cgbn_context_t() : _monitor(cgbn_no_checks), _report(NULL), _instance(0xFFFFFFFF) {
+cgbn_gmp_context_t<tpi, params>::cgbn_gmp_context_t() : _monitor(cgbn_no_checks), _report(NULL), _instance(0xFFFFFFFF) {
 }
 
 template<uint32_t tpi, class params>
-cgbn_context_t<tpi, params>::cgbn_context_t(cgbn_monitor_t monitor) : _monitor(monitor), _report(NULL), _instance(0xFFFFFFFF) {    
+cgbn_gmp_context_t<tpi, params>::cgbn_gmp_context_t(cgbn_monitor_t monitor) : _monitor(monitor), _report(NULL), _instance(0xFFFFFFFF) {    
 }
 
 template<uint32_t tpi, class params>
-cgbn_context_t<tpi, params>::cgbn_context_t(cgbn_monitor_t monitor, cgbn_error_report_t *report) : _monitor(monitor), _report(report), _instance(0xFFFFFFFF) {
+cgbn_gmp_context_t<tpi, params>::cgbn_gmp_context_t(cgbn_monitor_t monitor, cgbn_error_report_t *report) : _monitor(monitor), _report(report), _instance(0xFFFFFFFF) {
 }
 
 template<uint32_t tpi, class params>
-cgbn_context_t<tpi, params>::cgbn_context_t(cgbn_monitor_t monitor, cgbn_error_report_t *report, uint32_t instance) : _monitor(monitor), _report(report), _instance(instance) {
+cgbn_gmp_context_t<tpi, params>::cgbn_gmp_context_t(cgbn_monitor_t monitor, cgbn_error_report_t *report, uint32_t instance) : _monitor(monitor), _report(report), _instance(instance) {
 }
 
 template<uint32_t tpi, class params>
-bool cgbn_context_t<tpi, params>::check_errors() const {
+bool cgbn_gmp_context_t<tpi, params>::check_errors() const {
   return _monitor!=cgbn_no_checks;
 }
 
 template<uint32_t tpi, class params>
-void cgbn_context_t<tpi, params>::report_error(cgbn_error_t error) const {
+void cgbn_gmp_context_t<tpi, params>::report_error(cgbn_error_t error) const {
   if(_report!=NULL) {
     dim3 maxdim;
 
@@ -105,56 +105,56 @@ void cgbn_context_t<tpi, params>::report_error(cgbn_error_t error) const {
 
 /*  forward declarations aren't working for this right now
 template<uint32_t threads_per_instance, uint32_t threads_per_block> template<typename env_t>
-env_t cgbn_context_t<threads_per_instance, threads_per_block>::env() {
+env_t cgbn_gmp_context_t<threads_per_instance, threads_per_block>::env() {
   env_t env(this);
 
   return env;
 }
 
 template<uint32_t threads_per_instance, uint32_t threads_per_block> template<uint32_t bits>
-cgbn_env_t<cgbn_context_t, bits> cgbn_context_t<threads_per_instance, threads_per_block>::env() {
-  cgbn_env_t<cgbn_context_t, bits> env(this);
+cgbn_gmp_env_t<cgbn_gmp_context_t, bits> cgbn_gmp_context_t<threads_per_instance, threads_per_block>::env() {
+  cgbn_gmp_env_t<cgbn_gmp_context_t, bits> env(this);
 
   return env;
 }
 */
 
 /****************************************************************************************************************
- * cgbn_env_t implementation using gmp
+ * cgbn_gmp_env_t implementation using gmp
  ****************************************************************************************************************/
 
 /* constructor */
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-cgbn_env_t<context_t, bits, convergence>::cgbn_env_t(const context_t &context) : _context(context) {
+cgbn_gmp_env_t<context_t, bits, convergence>::cgbn_gmp_env_t(const context_t &context) : _context(context) {
 }
 
 
 /* size conversion */
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>  template<typename source_cgbn_t>
-void cgbn_env_t<context_t, bits, convergence>::set(cgbn_t &r, const source_cgbn_t &source) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::set(cgbn_t &r, const source_cgbn_t &source) const {
   mpz_fdiv_r_2exp(r._z, source._z, bits);
 }
 
 
 /* set get routines */
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::set(cgbn_t &r, const cgbn_t &a) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::set(cgbn_t &r, const cgbn_t &a) const {
   mpz_fdiv_r_2exp(r._z, a._z, bits);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::swap(cgbn_t &r, cgbn_t &a) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::swap(cgbn_t &r, cgbn_t &a) const {
   mpz_swap(r._z, a._z);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::extract_bits(cgbn_t &r, const cgbn_t &a, const uint32_t start, const uint32_t len) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::extract_bits(cgbn_t &r, const cgbn_t &a, const uint32_t start, const uint32_t len) const {
   mpz_fdiv_q_2exp(r._z, a._z, start);
   mpz_fdiv_r_2exp(r._z, r._z, len);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::insert_bits(cgbn_t &r, const cgbn_t &a, const uint32_t start, const uint32_t len, const cgbn_t &value) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::insert_bits(cgbn_t &r, const cgbn_t &a, const uint32_t start, const uint32_t len, const cgbn_t &value) const {
   mpz_t   temp;
   int32_t index;
 
@@ -177,17 +177,17 @@ void cgbn_env_t<context_t, bits, convergence>::insert_bits(cgbn_t &r, const cgbn
 
 /* ui32 routines */
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-uint32_t cgbn_env_t<context_t, bits, convergence>::get_ui32(const cgbn_t &a) const {
+uint32_t cgbn_gmp_env_t<context_t, bits, convergence>::get_ui32(const cgbn_t &a) const {
   return mpz_get_ui(a._z);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::set_ui32(cgbn_t &r, const uint32_t value) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::set_ui32(cgbn_t &r, const uint32_t value) const {
    mpz_set_ui(r._z, value);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-int32_t cgbn_env_t<context_t, bits, convergence>::add_ui32(cgbn_t &r, const cgbn_t &a, const uint32_t add) const {
+int32_t cgbn_gmp_env_t<context_t, bits, convergence>::add_ui32(cgbn_t &r, const cgbn_t &a, const uint32_t add) const {
   uint32_t result;
   mpz_t    top;
 
@@ -201,7 +201,7 @@ int32_t cgbn_env_t<context_t, bits, convergence>::add_ui32(cgbn_t &r, const cgbn
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-int32_t cgbn_env_t<context_t, bits, convergence>::sub_ui32(cgbn_t &r, const cgbn_t &a, const uint32_t sub) const {
+int32_t cgbn_gmp_env_t<context_t, bits, convergence>::sub_ui32(cgbn_t &r, const cgbn_t &a, const uint32_t sub) const {
   uint32_t result;
   mpz_t    top;
 
@@ -215,7 +215,7 @@ int32_t cgbn_env_t<context_t, bits, convergence>::sub_ui32(cgbn_t &r, const cgbn
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-uint32_t cgbn_env_t<context_t, bits, convergence>::mul_ui32(cgbn_t &r, const cgbn_t &a, const uint32_t mul) const {
+uint32_t cgbn_gmp_env_t<context_t, bits, convergence>::mul_ui32(cgbn_t &r, const cgbn_t &a, const uint32_t mul) const {
   uint32_t result;
   mpz_t    top;
 
@@ -229,7 +229,7 @@ uint32_t cgbn_env_t<context_t, bits, convergence>::mul_ui32(cgbn_t &r, const cgb
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-uint32_t cgbn_env_t<context_t, bits, convergence>::div_ui32(cgbn_t &r, const cgbn_t &a, const uint32_t div) const {
+uint32_t cgbn_gmp_env_t<context_t, bits, convergence>::div_ui32(cgbn_t &r, const cgbn_t &a, const uint32_t div) const {
   uint32_t result;
   mpz_t    mod;
 
@@ -247,7 +247,7 @@ uint32_t cgbn_env_t<context_t, bits, convergence>::div_ui32(cgbn_t &r, const cgb
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-uint32_t cgbn_env_t<context_t, bits, convergence>::rem_ui32(const cgbn_t &a, const uint32_t div) const {
+uint32_t cgbn_gmp_env_t<context_t, bits, convergence>::rem_ui32(const cgbn_t &a, const uint32_t div) const {
   uint32_t result;
   mpz_t    mod;
 
@@ -264,13 +264,13 @@ uint32_t cgbn_env_t<context_t, bits, convergence>::rem_ui32(const cgbn_t &a, con
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-bool cgbn_env_t<context_t, bits, convergence>::equals_ui32(const cgbn_t &a, const uint32_t value) const {
+bool cgbn_gmp_env_t<context_t, bits, convergence>::equals_ui32(const cgbn_t &a, const uint32_t value) const {
   return mpz_cmp_ui(a._z, value)==0;
 }
 
 // TODO.feat
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-bool cgbn_env_t<context_t, bits, convergence>::all_equals_ui32(const cgbn_t &a, const uint32_t value) const {
+bool cgbn_gmp_env_t<context_t, bits, convergence>::all_equals_ui32(const cgbn_t &a, const uint32_t value) const {
   bool ret=true;
   mpz_t b;
   mpz_init(b);
@@ -292,7 +292,7 @@ bool cgbn_env_t<context_t, bits, convergence>::all_equals_ui32(const cgbn_t &a, 
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-int32_t cgbn_env_t<context_t, bits, convergence>::compare_ui32(const cgbn_t &a, const uint32_t value) const {
+int32_t cgbn_gmp_env_t<context_t, bits, convergence>::compare_ui32(const cgbn_t &a, const uint32_t value) const {
   int32_t cmp=mpz_cmp_ui(a._z, value);
 
   if(cmp>0) return 1;
@@ -301,7 +301,7 @@ int32_t cgbn_env_t<context_t, bits, convergence>::compare_ui32(const cgbn_t &a, 
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-uint32_t cgbn_env_t<context_t, bits, convergence>::extract_bits_ui32(const cgbn_t &a, const uint32_t start, const uint32_t len) const {
+uint32_t cgbn_gmp_env_t<context_t, bits, convergence>::extract_bits_ui32(const cgbn_t &a, const uint32_t start, const uint32_t len) const {
   uint32_t result;
   mpz_t    chunk;
 
@@ -315,7 +315,7 @@ uint32_t cgbn_env_t<context_t, bits, convergence>::extract_bits_ui32(const cgbn_
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::insert_bits_ui32(cgbn_t &r, const cgbn_t &a, const uint32_t start, const uint32_t len, const uint32_t value) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::insert_bits_ui32(cgbn_t &r, const cgbn_t &a, const uint32_t start, const uint32_t len, const uint32_t value) const {
   int32_t index, local=len;
   mpz_t   chunk;
 
@@ -340,7 +340,7 @@ void cgbn_env_t<context_t, bits, convergence>::insert_bits_ui32(cgbn_t &r, const
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-uint32_t cgbn_env_t<context_t, bits, convergence>::binary_inverse_ui32(const uint32_t n0) const {
+uint32_t cgbn_gmp_env_t<context_t, bits, convergence>::binary_inverse_ui32(const uint32_t n0) const {
   uint32_t inv=n0;
 
   inv=inv*(inv*n0+14);
@@ -351,7 +351,7 @@ uint32_t cgbn_env_t<context_t, bits, convergence>::binary_inverse_ui32(const uin
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-uint32_t cgbn_env_t<context_t, bits, convergence>::gcd_ui32(const cgbn_t &a, const uint32_t value) const {
+uint32_t cgbn_gmp_env_t<context_t, bits, convergence>::gcd_ui32(const cgbn_t &a, const uint32_t value) const {
   uint32_t result;
   mpz_t    temp;
 
@@ -369,7 +369,7 @@ uint32_t cgbn_env_t<context_t, bits, convergence>::gcd_ui32(const cgbn_t &a, con
 
 /* bn arithmetic routines */
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-int32_t cgbn_env_t<context_t, bits, convergence>::add(cgbn_t &r, const cgbn_t &a, const cgbn_t &b) const {
+int32_t cgbn_gmp_env_t<context_t, bits, convergence>::add(cgbn_t &r, const cgbn_t &a, const cgbn_t &b) const {
   int32_t carry;
 
   mpz_add(r._z, a._z, b._z);
@@ -379,7 +379,7 @@ int32_t cgbn_env_t<context_t, bits, convergence>::add(cgbn_t &r, const cgbn_t &a
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-int32_t cgbn_env_t<context_t, bits, convergence>::sub(cgbn_t &r, const cgbn_t &a, const cgbn_t &b) const {
+int32_t cgbn_gmp_env_t<context_t, bits, convergence>::sub(cgbn_t &r, const cgbn_t &a, const cgbn_t &b) const {
   int32_t carry;
 
   mpz_sub(r._z, a._z, b._z);
@@ -389,58 +389,58 @@ int32_t cgbn_env_t<context_t, bits, convergence>::sub(cgbn_t &r, const cgbn_t &a
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-int32_t cgbn_env_t<context_t, bits, convergence>::negate(cgbn_t &r, const cgbn_t &a) const {
+int32_t cgbn_gmp_env_t<context_t, bits, convergence>::negate(cgbn_t &r, const cgbn_t &a) const {
   mpz_ui_sub(r._z, 0, a._z);
   mpz_fdiv_r_2exp(r._z, r._z, bits);
   return (mpz_sgn(r._z)==0) ? 0 : -1;
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::mul(cgbn_t &r, const cgbn_t &a, const cgbn_t &b) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::mul(cgbn_t &r, const cgbn_t &a, const cgbn_t &b) const {
   mpz_mul(r._z, a._z, b._z);
   mpz_fdiv_r_2exp(r._z, r._z, bits);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::mul_high(cgbn_t &r, const cgbn_t &a, const cgbn_t &b) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::mul_high(cgbn_t &r, const cgbn_t &a, const cgbn_t &b) const {
   mpz_mul(r._z, a._z, b._z);
   mpz_fdiv_q_2exp(r._z, r._z, bits);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::sqr(cgbn_t &r, const cgbn_t &a) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::sqr(cgbn_t &r, const cgbn_t &a) const {
   mpz_mul(r._z, a._z, a._z);
   mpz_fdiv_r_2exp(r._z, r._z, bits);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::sqr_high(cgbn_t &r, const cgbn_t &a) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::sqr_high(cgbn_t &r, const cgbn_t &a) const {
   mpz_mul(r._z, a._z, a._z);
   mpz_fdiv_q_2exp(r._z, r._z, bits);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::div(cgbn_t &q, const cgbn_t &num, const cgbn_t &denom) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::div(cgbn_t &q, const cgbn_t &num, const cgbn_t &denom) const {
   mpz_fdiv_q(q._z, num._z, denom._z);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::rem(cgbn_t &r, const cgbn_t &num, const cgbn_t &denom) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::rem(cgbn_t &r, const cgbn_t &num, const cgbn_t &denom) const {
   mpz_fdiv_r(r._z, num._z, denom._z);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::div_rem(cgbn_t &q, cgbn_t &r, const cgbn_t &num, const cgbn_t &denom) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::div_rem(cgbn_t &q, cgbn_t &r, const cgbn_t &num, const cgbn_t &denom) const {
   mpz_fdiv_qr(q._z, r._z, num._z, denom._z);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::sqrt(cgbn_t &s, const cgbn_t &a) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::sqrt(cgbn_t &s, const cgbn_t &a) const {
   mpz_sqrt(s._z, a._z);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::sqrt_rem(cgbn_t &s, cgbn_t &r, const cgbn_t &a) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::sqrt_rem(cgbn_t &s, cgbn_t &r, const cgbn_t &a) const {
   mpz_t sqrt, rem;
 
   mpz_init(sqrt);
@@ -454,12 +454,12 @@ void cgbn_env_t<context_t, bits, convergence>::sqrt_rem(cgbn_t &s, cgbn_t &r, co
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-bool cgbn_env_t<context_t, bits, convergence>::equals(const cgbn_t &a, const cgbn_t &b) const {
+bool cgbn_gmp_env_t<context_t, bits, convergence>::equals(const cgbn_t &a, const cgbn_t &b) const {
   return mpz_cmp(a._z, b._z)==0;
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-int32_t cgbn_env_t<context_t, bits, convergence>::compare(const cgbn_t &a, const cgbn_t &b) const {
+int32_t cgbn_gmp_env_t<context_t, bits, convergence>::compare(const cgbn_t &a, const cgbn_t &b) const {
   int32_t cmp=mpz_cmp(a._z, b._z);
 
   if(cmp>0) return 1;
@@ -470,22 +470,22 @@ int32_t cgbn_env_t<context_t, bits, convergence>::compare(const cgbn_t &a, const
 
 /* logical, shifting, masking */
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::bitwise_and(cgbn_t &r, const cgbn_t &a, const cgbn_t &b) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::bitwise_and(cgbn_t &r, const cgbn_t &a, const cgbn_t &b) const {
   mpz_and(r._z, a._z, b._z);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::bitwise_ior(cgbn_t &r, const cgbn_t &a, const cgbn_t &b) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::bitwise_ior(cgbn_t &r, const cgbn_t &a, const cgbn_t &b) const {
   mpz_ior(r._z, a._z, b._z);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::bitwise_xor(cgbn_t &r, const cgbn_t &a, const cgbn_t &b) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::bitwise_xor(cgbn_t &r, const cgbn_t &a, const cgbn_t &b) const {
   mpz_xor(r._z, a._z, b._z);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::bitwise_complement(cgbn_t &r, const cgbn_t &a) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::bitwise_complement(cgbn_t &r, const cgbn_t &a) const {
   mpz_t temp;
 
   mpz_init(temp);
@@ -497,7 +497,7 @@ void cgbn_env_t<context_t, bits, convergence>::bitwise_complement(cgbn_t &r, con
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::bitwise_select(cgbn_t &r, const cgbn_t &clear, const cgbn_t &set, const cgbn_t &select) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::bitwise_select(cgbn_t &r, const cgbn_t &clear, const cgbn_t &set, const cgbn_t &select) const {
   mpz_t mask, temp;
   
   mpz_init(temp);
@@ -533,12 +533,12 @@ void make_mask(mpz_t mask, int32_t numbits) {
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::bitwise_mask_copy(cgbn_t &r, const int32_t numbits) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::bitwise_mask_copy(cgbn_t &r, const int32_t numbits) const {
   make_mask<bits>(r._z, numbits);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::bitwise_mask_and(cgbn_t &r, const cgbn_t &a, const int32_t numbits) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::bitwise_mask_and(cgbn_t &r, const cgbn_t &a, const int32_t numbits) const {
   mpz_t temp;
 
   mpz_init(temp);
@@ -548,7 +548,7 @@ void cgbn_env_t<context_t, bits, convergence>::bitwise_mask_and(cgbn_t &r, const
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::bitwise_mask_ior(cgbn_t &r, const cgbn_t &a, const int32_t numbits) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::bitwise_mask_ior(cgbn_t &r, const cgbn_t &a, const int32_t numbits) const {
   mpz_t temp;
 
   mpz_init(temp);
@@ -558,7 +558,7 @@ void cgbn_env_t<context_t, bits, convergence>::bitwise_mask_ior(cgbn_t &r, const
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::bitwise_mask_xor(cgbn_t &r, const cgbn_t &a, const int32_t numbits) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::bitwise_mask_xor(cgbn_t &r, const cgbn_t &a, const int32_t numbits) const {
   mpz_t temp;
 
   mpz_init(temp);
@@ -568,7 +568,7 @@ void cgbn_env_t<context_t, bits, convergence>::bitwise_mask_xor(cgbn_t &r, const
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::bitwise_mask_select(cgbn_t &r, const cgbn_t &clear, const cgbn_t &set, const int32_t numbits) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::bitwise_mask_select(cgbn_t &r, const cgbn_t &clear, const cgbn_t &set, const int32_t numbits) const {
   mpz_t temp, mask, select;
 
   mpz_init(temp);
@@ -591,18 +591,18 @@ void cgbn_env_t<context_t, bits, convergence>::bitwise_mask_select(cgbn_t &r, co
 
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::shift_left(cgbn_t &r, const cgbn_t &a, const uint32_t numbits) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::shift_left(cgbn_t &r, const cgbn_t &a, const uint32_t numbits) const {
   mpz_mul_2exp(r._z, a._z, numbits);
   mpz_fdiv_r_2exp(r._z, r._z, bits);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::shift_right(cgbn_t &r, const cgbn_t &a, const uint32_t numbits) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::shift_right(cgbn_t &r, const cgbn_t &a, const uint32_t numbits) const {
   mpz_fdiv_q_2exp(r._z, a._z, numbits);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::rotate_left(cgbn_t &r, const cgbn_t &a, const uint32_t numbits) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::rotate_left(cgbn_t &r, const cgbn_t &a, const uint32_t numbits) const {
   mpz_t    left, right;
   uint32_t amount;
 
@@ -618,7 +618,7 @@ void cgbn_env_t<context_t, bits, convergence>::rotate_left(cgbn_t &r, const cgbn
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::rotate_right(cgbn_t &r, const cgbn_t &a, const uint32_t numbits) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::rotate_right(cgbn_t &r, const cgbn_t &a, const uint32_t numbits) const {
   mpz_t    left, right;
   uint32_t amount;
 
@@ -638,40 +638,40 @@ void cgbn_env_t<context_t, bits, convergence>::rotate_right(cgbn_t &r, const cgb
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence> template<uint32_t numbits>
-void cgbn_env_t<context_t, bits, convergence>::shift_left(cgbn_t &r, const cgbn_t &a) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::shift_left(cgbn_t &r, const cgbn_t &a) const {
   shift_left(r, a, numbits);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence> template<uint32_t numbits>
-void cgbn_env_t<context_t, bits, convergence>::shift_right(cgbn_t &r, const cgbn_t &a) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::shift_right(cgbn_t &r, const cgbn_t &a) const {
   shift_right(r, a, numbits);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence> template<uint32_t numbits>
-void cgbn_env_t<context_t, bits, convergence>::rotate_left(cgbn_t &r, const cgbn_t &a) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::rotate_left(cgbn_t &r, const cgbn_t &a) const {
   rotate_left(r, a, numbits);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence> template<uint32_t numbits>
-void cgbn_env_t<context_t, bits, convergence>::rotate_right(cgbn_t &r, const cgbn_t &a) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::rotate_right(cgbn_t &r, const cgbn_t &a) const {
   rotate_right(r, a, numbits);
 }
 
 /* bit counting */
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-uint32_t cgbn_env_t<context_t, bits, convergence>::pop_count(const cgbn_t &a) const {
+uint32_t cgbn_gmp_env_t<context_t, bits, convergence>::pop_count(const cgbn_t &a) const {
   return mpz_popcount(a._z);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-uint32_t cgbn_env_t<context_t, bits, convergence>::clz(const cgbn_t &a) const {
+uint32_t cgbn_gmp_env_t<context_t, bits, convergence>::clz(const cgbn_t &a) const {
   if(mpz_sgn(a._z)==0)
     return bits;
   return bits-mpz_sizeinbase(a._z, 2);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-uint32_t cgbn_env_t<context_t, bits, convergence>::ctz(const cgbn_t &a) const {
+uint32_t cgbn_gmp_env_t<context_t, bits, convergence>::ctz(const cgbn_t &a) const {
   if(mpz_sgn(a._z)==0)
     return bits;
   return mpz_scan1(a._z, 0);
@@ -681,7 +681,7 @@ uint32_t cgbn_env_t<context_t, bits, convergence>::ctz(const cgbn_t &a) const {
 
 /* wide math routines */
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::mul_wide(cgbn_wide_t &r, const cgbn_t &a, const cgbn_t &b) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::mul_wide(cgbn_wide_t &r, const cgbn_t &a, const cgbn_t &b) const {
   mpz_t temp;
 
   mpz_init(temp);
@@ -692,7 +692,7 @@ void cgbn_env_t<context_t, bits, convergence>::mul_wide(cgbn_wide_t &r, const cg
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::sqr_wide(cgbn_wide_t &r, const cgbn_t &a) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::sqr_wide(cgbn_wide_t &r, const cgbn_t &a) const {
   mpz_t temp;
 
   mpz_init(temp);
@@ -703,7 +703,7 @@ void cgbn_env_t<context_t, bits, convergence>::sqr_wide(cgbn_wide_t &r, const cg
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::div_wide(cgbn_t &q, const cgbn_wide_t &num, const cgbn_t &denom) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::div_wide(cgbn_t &q, const cgbn_wide_t &num, const cgbn_t &denom) const {
   mpz_t temp;
 
   if(_context.check_errors()) {
@@ -725,7 +725,7 @@ void cgbn_env_t<context_t, bits, convergence>::div_wide(cgbn_t &q, const cgbn_wi
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::rem_wide(cgbn_t &r, const cgbn_wide_t &num, const cgbn_t &denom) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::rem_wide(cgbn_t &r, const cgbn_wide_t &num, const cgbn_t &denom) const {
   mpz_t temp;
 
   if(_context.check_errors()) {
@@ -743,7 +743,7 @@ void cgbn_env_t<context_t, bits, convergence>::rem_wide(cgbn_t &r, const cgbn_wi
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::div_rem_wide(cgbn_t &q, cgbn_t &r, const cgbn_wide_t &num, const cgbn_t &denom) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::div_rem_wide(cgbn_t &q, cgbn_t &r, const cgbn_wide_t &num, const cgbn_t &denom) const {
   mpz_t temp;
 
   if(_context.check_errors()) {
@@ -766,7 +766,7 @@ void cgbn_env_t<context_t, bits, convergence>::div_rem_wide(cgbn_t &q, cgbn_t &r
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::sqrt_wide(cgbn_t &s, const cgbn_wide_t &a) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::sqrt_wide(cgbn_t &s, const cgbn_wide_t &a) const {
   mpz_t temp;
 
   mpz_init(temp);
@@ -778,7 +778,7 @@ void cgbn_env_t<context_t, bits, convergence>::sqrt_wide(cgbn_t &s, const cgbn_w
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::sqrt_rem_wide(cgbn_t &s, cgbn_wide_t &r, const cgbn_wide_t &a) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::sqrt_rem_wide(cgbn_t &s, cgbn_wide_t &r, const cgbn_wide_t &a) const {
   mpz_t temp, sqrt;
 
   mpz_init(temp);
@@ -797,7 +797,7 @@ void cgbn_env_t<context_t, bits, convergence>::sqrt_rem_wide(cgbn_t &s, cgbn_wid
 
 /* accumulator APIs */
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-__host__ int32_t cgbn_env_t<context_t, bits, convergence>::resolve(cgbn_t &sum, const cgbn_accumulator_t &accumulator) const {
+__host__ int32_t cgbn_gmp_env_t<context_t, bits, convergence>::resolve(cgbn_t &sum, const cgbn_accumulator_t &accumulator) const {
   mpz_t    temp;
   uint32_t r;
 
@@ -811,7 +811,7 @@ __host__ int32_t cgbn_env_t<context_t, bits, convergence>::resolve(cgbn_t &sum, 
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-__host__ void cgbn_env_t<context_t, bits, convergence>::all_set_ui32(cgbn_t &r, const uint32_t value) const {
+__host__ void cgbn_gmp_env_t<context_t, bits, convergence>::all_set_ui32(cgbn_t &r, const uint32_t value) const {
   mpz_set_ui(r._z, value);
   for(int32_t i=32; i<bits; i+=32) {
     mpz_mul_2exp(r._z, r._z, 32);
@@ -820,39 +820,39 @@ __host__ void cgbn_env_t<context_t, bits, convergence>::all_set_ui32(cgbn_t &r, 
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-__host__ void cgbn_env_t<context_t, bits, convergence>::set_ui32(cgbn_accumulator_t &accumulator, const uint32_t value) const {
+__host__ void cgbn_gmp_env_t<context_t, bits, convergence>::set_ui32(cgbn_accumulator_t &accumulator, const uint32_t value) const {
   mpz_set_ui(accumulator._z, value);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-__host__ void cgbn_env_t<context_t, bits, convergence>::add_ui32(cgbn_accumulator_t &accumulator, const uint32_t value) const {
+__host__ void cgbn_gmp_env_t<context_t, bits, convergence>::add_ui32(cgbn_accumulator_t &accumulator, const uint32_t value) const {
   mpz_add_ui(accumulator._z, accumulator._z, value);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-__host__ void cgbn_env_t<context_t, bits, convergence>::sub_ui32(cgbn_accumulator_t &accumulator, const uint32_t value) const {
+__host__ void cgbn_gmp_env_t<context_t, bits, convergence>::sub_ui32(cgbn_accumulator_t &accumulator, const uint32_t value) const {
   mpz_sub_ui(accumulator._z, accumulator._z, value);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-__host__ void cgbn_env_t<context_t, bits, convergence>::set(cgbn_accumulator_t &accumulator, const cgbn_t &value) const {
+__host__ void cgbn_gmp_env_t<context_t, bits, convergence>::set(cgbn_accumulator_t &accumulator, const cgbn_t &value) const {
   mpz_set(accumulator._z, value._z);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-__host__ void cgbn_env_t<context_t, bits, convergence>::add(cgbn_accumulator_t &accumulator, const cgbn_t &value) const {
+__host__ void cgbn_gmp_env_t<context_t, bits, convergence>::add(cgbn_accumulator_t &accumulator, const cgbn_t &value) const {
   mpz_add(accumulator._z, accumulator._z, value._z);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-__host__ void cgbn_env_t<context_t, bits, convergence>::sub(cgbn_accumulator_t &accumulator, const cgbn_t &value) const {
+__host__ void cgbn_gmp_env_t<context_t, bits, convergence>::sub(cgbn_accumulator_t &accumulator, const cgbn_t &value) const {
   mpz_sub(accumulator._z, accumulator._z, value._z);
 }
 
 
 /* math */
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::binary_inverse(cgbn_t &r, const cgbn_t &m) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::binary_inverse(cgbn_t &r, const cgbn_t &m) const {
   mpz_t temp;
 
   if(_context.check_errors()) {
@@ -868,7 +868,7 @@ void cgbn_env_t<context_t, bits, convergence>::binary_inverse(cgbn_t &r, const c
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-bool cgbn_env_t<context_t, bits, convergence>::modular_inverse(cgbn_t &r, const cgbn_t &x, const cgbn_t &modulus) const {
+bool cgbn_gmp_env_t<context_t, bits, convergence>::modular_inverse(cgbn_t &r, const cgbn_t &x, const cgbn_t &modulus) const {
   uint32_t inverted;
 
   inverted=0;
@@ -880,7 +880,7 @@ bool cgbn_env_t<context_t, bits, convergence>::modular_inverse(cgbn_t &r, const 
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::modular_power(cgbn_t &r, const cgbn_t &a, const cgbn_t &k, const cgbn_t &m) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::modular_power(cgbn_t &r, const cgbn_t &a, const cgbn_t &k, const cgbn_t &m) const {
   if(_context.check_errors()) {
     if(mpz_cmp(a._z, m._z)>=0) {
       _context.report_error(cgbn_division_overflow_error);
@@ -891,7 +891,7 @@ void cgbn_env_t<context_t, bits, convergence>::modular_power(cgbn_t &r, const cg
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::gcd(cgbn_t &r, const cgbn_t &a, const cgbn_t &b) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::gcd(cgbn_t &r, const cgbn_t &a, const cgbn_t &b) const {
   mpz_gcd(r._z, a._z, b._z);
 }
 
@@ -899,7 +899,7 @@ void cgbn_env_t<context_t, bits, convergence>::gcd(cgbn_t &r, const cgbn_t &a, c
 
 /* fast division: common divisor / modulus */
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-uint32_t cgbn_env_t<context_t, bits, convergence>::bn2mont(cgbn_t &mont, const cgbn_t &bn, const cgbn_t &n) const {
+uint32_t cgbn_gmp_env_t<context_t, bits, convergence>::bn2mont(cgbn_t &mont, const cgbn_t &bn, const cgbn_t &n) const {
   mpz_t    temp;
   uint32_t n0, inv;
 
@@ -927,7 +927,7 @@ uint32_t cgbn_env_t<context_t, bits, convergence>::bn2mont(cgbn_t &mont, const c
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::mont2bn(cgbn_t &bn, const cgbn_t &mont, const cgbn_t &n, uint32_t np0) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::mont2bn(cgbn_t &bn, const cgbn_t &mont, const cgbn_t &n, uint32_t np0) const {
   mpz_t    prod, add;
   int32_t  index;
   uint32_t low;
@@ -956,7 +956,7 @@ void cgbn_env_t<context_t, bits, convergence>::mont2bn(cgbn_t &bn, const cgbn_t 
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::mont_mul(cgbn_t &r, const cgbn_t &a, const cgbn_t &b, const cgbn_t &n, uint32_t np0) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::mont_mul(cgbn_t &r, const cgbn_t &a, const cgbn_t &b, const cgbn_t &n, uint32_t np0) const {
   mpz_t    prod, add;
   int32_t  index;
   uint32_t low;
@@ -984,7 +984,7 @@ void cgbn_env_t<context_t, bits, convergence>::mont_mul(cgbn_t &r, const cgbn_t 
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::mont_sqr(cgbn_t &r, const cgbn_t &a, const cgbn_t &n, uint32_t np0) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::mont_sqr(cgbn_t &r, const cgbn_t &a, const cgbn_t &n, uint32_t np0) const {
   mpz_t    prod, add;
   int32_t  index;
   uint32_t low;
@@ -1012,7 +1012,7 @@ void cgbn_env_t<context_t, bits, convergence>::mont_sqr(cgbn_t &r, const cgbn_t 
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::mont_reduce_wide(cgbn_t &r, const cgbn_wide_t &a, const cgbn_t &n, uint32_t np0) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::mont_reduce_wide(cgbn_t &r, const cgbn_wide_t &a, const cgbn_t &n, uint32_t np0) const {
   mpz_t    prod, add;
   int32_t  index;
   uint32_t low;
@@ -1044,7 +1044,7 @@ void cgbn_env_t<context_t, bits, convergence>::mont_reduce_wide(cgbn_t &r, const
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-uint32_t cgbn_env_t<context_t, bits, convergence>::barrett_approximation(cgbn_t &approx, const cgbn_t &denom) const {
+uint32_t cgbn_gmp_env_t<context_t, bits, convergence>::barrett_approximation(cgbn_t &approx, const cgbn_t &denom) const {
   mpz_t    temp, shifted;
   uint32_t clz;
 
@@ -1080,7 +1080,7 @@ uint32_t cgbn_env_t<context_t, bits, convergence>::barrett_approximation(cgbn_t 
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::barrett_div(cgbn_t &q, const cgbn_t &num, const cgbn_t &denom, const cgbn_t &approx, const uint32_t denom_clz) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::barrett_div(cgbn_t &q, const cgbn_t &num, const cgbn_t &denom, const cgbn_t &approx, const uint32_t denom_clz) const {
   mpz_t   temp, quot, rem;
   int32_t count;
 
@@ -1149,7 +1149,7 @@ void cgbn_env_t<context_t, bits, convergence>::barrett_div(cgbn_t &q, const cgbn
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::barrett_rem(cgbn_t &q, const cgbn_t &num, const cgbn_t &denom, const cgbn_t &approx, const uint32_t denom_clz) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::barrett_rem(cgbn_t &q, const cgbn_t &num, const cgbn_t &denom, const cgbn_t &approx, const uint32_t denom_clz) const {
   mpz_t   temp, quot, rem;
   int32_t count;
 
@@ -1217,7 +1217,7 @@ void cgbn_env_t<context_t, bits, convergence>::barrett_rem(cgbn_t &q, const cgbn
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::barrett_div_rem(cgbn_t &q, cgbn_t &r, const cgbn_t &num, const cgbn_t &denom, const cgbn_t &approx, const uint32_t denom_clz) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::barrett_div_rem(cgbn_t &q, cgbn_t &r, const cgbn_t &num, const cgbn_t &denom, const cgbn_t &approx, const uint32_t denom_clz) const {
   mpz_t   temp, quot, rem;
   int32_t count;
 
@@ -1287,7 +1287,7 @@ void cgbn_env_t<context_t, bits, convergence>::barrett_div_rem(cgbn_t &q, cgbn_t
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::barrett_div_wide(cgbn_t &q, const cgbn_wide_t &num, const cgbn_t &denom, const cgbn_t &approx, const uint32_t denom_clz) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::barrett_div_wide(cgbn_t &q, const cgbn_wide_t &num, const cgbn_t &denom, const cgbn_t &approx, const uint32_t denom_clz) const {
   mpz_t temp;
 
   if(_context.check_errors()) {
@@ -1305,7 +1305,7 @@ void cgbn_env_t<context_t, bits, convergence>::barrett_div_wide(cgbn_t &q, const
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::barrett_rem_wide(cgbn_t &r, const cgbn_wide_t &num, const cgbn_t &denom, const cgbn_t &approx, const uint32_t denom_clz) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::barrett_rem_wide(cgbn_t &r, const cgbn_wide_t &num, const cgbn_t &denom, const cgbn_t &approx, const uint32_t denom_clz) const {
   mpz_t temp;
 
   if(_context.check_errors()) {
@@ -1323,7 +1323,7 @@ void cgbn_env_t<context_t, bits, convergence>::barrett_rem_wide(cgbn_t &r, const
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::barrett_div_rem_wide(cgbn_t &q, cgbn_t &r, const cgbn_wide_t &num, const cgbn_t &denom, const cgbn_t &approx, const uint32_t denom_clz) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::barrett_div_rem_wide(cgbn_t &q, cgbn_t &r, const cgbn_wide_t &num, const cgbn_t &denom, const cgbn_t &approx, const uint32_t denom_clz) const {
   mpz_t temp;
 
   if(_context.check_errors()) {
@@ -1344,7 +1344,7 @@ void cgbn_env_t<context_t, bits, convergence>::barrett_div_rem_wide(cgbn_t &q, c
 
 /*
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::barrett_div_wide(cgbn_t &q, const cgbn_wide_t &num, const cgbn_t &denom, const cgbn_t &approx) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::barrett_div_wide(cgbn_t &q, const cgbn_wide_t &num, const cgbn_t &denom, const cgbn_t &approx) const {
   mpz_t temp;
 
   if(_context.check_errors()) {
@@ -1364,12 +1364,12 @@ void cgbn_env_t<context_t, bits, convergence>::barrett_div_wide(cgbn_t &q, const
 
 /* load and store routines */
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::load(cgbn_t &r, cgbn_mem_t<bits> *const address) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::load(cgbn_t &r, cgbn_mem_t<bits> *const address) const {
   mpz_import(r._z, (bits+31)/32, -1, sizeof(uint32_t), 0, 0, (uint32_t *)address);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::store(cgbn_mem_t<bits> *address, const cgbn_t &a) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::store(cgbn_mem_t<bits> *address, const cgbn_t &a) const {
   size_t words;
 
   if(mpz_sizeinbase(a._z, 2)>bits) {
@@ -1383,14 +1383,14 @@ void cgbn_env_t<context_t, bits, convergence>::store(cgbn_mem_t<bits> *address, 
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::load_shorter(cgbn_t &dst, uint32_t *const src, uint32_t mem_limb_count) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::load_shorter(cgbn_t &dst, uint32_t *const src, uint32_t mem_limb_count) const {
   constexpr uint32_t nlimb = (bits+31)/32;
   const uint32_t words_togo = nlimb < mem_limb_count ? nlimb : mem_limb_count;
   mpz_import(dst._z, words_togo , -1, sizeof(uint32_t), 0, 0, (uint32_t *)src);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::store_shorter(uint32_t *dst, const cgbn_t &src, uint32_t mem_limb_count) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::store_shorter(uint32_t *dst, const cgbn_t &src, uint32_t mem_limb_count) const {
   size_t words;
   mpz_t ret;
 
@@ -1409,12 +1409,12 @@ void cgbn_env_t<context_t, bits, convergence>::store_shorter(uint32_t *dst, cons
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::load(cgbn_t &r, cgbn_local_t *const address) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::load(cgbn_t &r, cgbn_local_t *const address) const {
   mpz_set(r._z, address->_z);
 }
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-void cgbn_env_t<context_t, bits, convergence>::store(cgbn_local_t *address, const cgbn_t &a) const {
+void cgbn_gmp_env_t<context_t, bits, convergence>::store(cgbn_local_t *address, const cgbn_t &a) const {
   mpz_set(address->_z, a._z);
 }
 

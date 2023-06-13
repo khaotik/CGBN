@@ -25,10 +25,12 @@ IN THE SOFTWARE.
 #include <stdio.h>
 #include <stdlib.h>
 
+/*
 #if !defined(__CUDACC__)
   typedef struct {uint32_t x; uint32_t y; uint32_t z;} dim3;
   #define __host__
 #endif
+*/
 
 typedef enum {
   cgbn_instance_converged,
@@ -37,110 +39,87 @@ typedef enum {
   cgbn_grid_converged,
 } cgbn_convergence_t;
 
-class cgbn_default_parameters_t {
-  public:
-  static const uint32_t TPB=0;
+// TODO use constexpr struct instead of typename to pass param?
+struct cgbn_default_cuda_parameters_t {
+  static constexpr uint32_t TPB=0;
 };
 
 /* forward declarations */
 template<uint32_t tpi, class params>
-class cgbn_context_t;
+struct cgbn_gmp_context_t;
 
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence>
-class cgbn_env_t;
+struct cgbn_gmp_env_t;
 
-template<uint32_t bits>
-struct cgbn_mem_t {
-  public:
-  uint32_t _limbs[(bits+31)/32];
-};
-
-template<uint32_t tpi, class params=cgbn_default_parameters_t>
-class cgbn_context_t {
-  public:
-  static const uint32_t  TPI=tpi;
+template<uint32_t tpi, class params=cgbn_default_cuda_parameters_t>
+struct cgbn_gmp_context_t {
+  static constexpr uint32_t TPI= tpi;
+  static constexpr bool     is_gpu= false;
 
   const cgbn_monitor_t   _monitor;
   cgbn_error_report_t   *const _report;
   int32_t                _instance;
 
-  public:
-  __host__ cgbn_context_t();
-  __host__ cgbn_context_t(cgbn_monitor_t monitor);
-  __host__ cgbn_context_t(cgbn_monitor_t monitor, cgbn_error_report_t *report);
-  __host__ cgbn_context_t(cgbn_monitor_t monitor, cgbn_error_report_t *report, uint32_t instance);
+  __host__ cgbn_gmp_context_t();
+  __host__ cgbn_gmp_context_t(cgbn_monitor_t monitor);
+  __host__ cgbn_gmp_context_t(cgbn_monitor_t monitor, cgbn_error_report_t *report);
+  __host__ cgbn_gmp_context_t(cgbn_monitor_t monitor, cgbn_error_report_t *report, uint32_t instance);
   __host__ bool check_errors() const;
   __host__ void report_error(cgbn_error_t error) const;
 
   template<class env_t>
   env_t env() {
     env_t env(*this);
-
-    return env;
-  }
-
+    return env; }
   template<uint32_t bits, cgbn_convergence_t convergence>
-  cgbn_env_t<cgbn_context_t, bits, convergence> env() {
-    cgbn_env_t<cgbn_context_t, bits, convergence> env(*this);
-
+  cgbn_gmp_env_t<cgbn_gmp_context_t, bits, convergence> env() {
+    cgbn_gmp_env_t<cgbn_gmp_context_t, bits, convergence> env(*this);
     return env;
   }
 };
 
+template<uint32_t tpi, typename params>
+struct _cgbn_context_infer<tpi, params, false> {
+  using type = cgbn_gmp_context_t<tpi, params>; };
+
 template<class context_t, uint32_t bits, cgbn_convergence_t convergence=cgbn_instance_converged>
-class cgbn_env_t {
-  public:
-  static const uint32_t TPI=context_t::TPI;
-  static const uint32_t BITS=bits;
-  static const uint32_t LIMBS=(bits/32+TPI-1)/TPI;
-  static const uint32_t LOCAL_LIMBS=((bits+32)/64+TPI-1)/TPI*TPI;
-  static const uint32_t UNPADDED_BITS=TPI*LIMBS*32;
+struct cgbn_gmp_env_t {
+  static constexpr uint32_t TPI=context_t::TPI;
+  static constexpr uint32_t BITS=bits;
+  static constexpr uint32_t LIMBS=(bits/32+TPI-1)/TPI;
+  static constexpr uint32_t LOCAL_LIMBS=((bits+32)/64+TPI-1)/TPI*TPI;
+  static constexpr uint32_t UNPADDED_BITS=TPI*LIMBS*32;
 
   struct cgbn_t {
-    public:
-    typedef cgbn_env_t parent_env_t;
+    typedef cgbn_gmp_env_t parent_env_t;
     mpz_t _z;
 
     __host__ cgbn_t() {
-      mpz_init(_z);
-    }
-
+      mpz_init(_z); }
     __host__ ~cgbn_t() {
-      mpz_clear(_z);
-    }
+      mpz_clear(_z); }
   };
   struct cgbn_wide_t {
-    public:
     cgbn_t _low, _high;
   };
   struct cgbn_local_t {
-    public:
     mpz_t _z;
-
     __host__ cgbn_local_t() {
-      mpz_init(_z);
-    }
-
+      mpz_init(_z); }
     __host__ ~cgbn_local_t() {
-      mpz_clear(_z);
-    }
+      mpz_clear(_z); }
   };
   struct cgbn_accumulator_t {
-    public:
     mpz_t _z;
-
     __host__ cgbn_accumulator_t() {
-      mpz_init(_z);
-    }
-
+      mpz_init(_z); }
     __host__ ~cgbn_accumulator_t() {
-      mpz_clear(_z);
-    }
+      mpz_clear(_z); }
   };
 
   const context_t &_context;
 
-  __host__ cgbn_env_t(const context_t &context);
+  __host__ cgbn_gmp_env_t(const context_t &context);
 
   /* size conversion */
   template<typename source_cgbn_t>
