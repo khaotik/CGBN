@@ -107,7 +107,7 @@ using cgbn_context_t = typename _cgbn_context_infer<tpi, params, is_gpu>::type;
      #endif
   #endif
 #endif
-#include "cgbn_cuda.h"
+#include "cgbn/cgbn_cuda.h"
 #if (defined(CGBN_NO_GMP) || defined(__CUDACC_RTC__))
 
 template<typename ctx_ty, uint32_t bits, std::enable_if_t<ctx_ty::is_gpu,bool> = true >
@@ -115,7 +115,7 @@ using cgbn_env_t = cgbn_cuda_env_t<ctx_ty, bits>;
 
 #else
 
-#include "cgbn_mpz.h"
+#include "cgbn/cgbn_mpz.h"
 template<typename ctx_ty, uint32_t bits> // TODO use variadic template for more args ?
 using cgbn_env_t = std::conditional_t<ctx_ty::is_gpu,
   cgbn_cuda_env_t<ctx_ty, bits>,

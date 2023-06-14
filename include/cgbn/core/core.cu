@@ -22,11 +22,11 @@ IN THE SOFTWARE.
 
 ***/
 
-#include "dispatch_padding.cu"
-#include "dispatch_resolver.cu"
-#include "dispatch_masking.cu"
-#include "dispatch_shift_rotate.cu"
-#include "dispatch_dlimbs.cu"
+#include "cgbn/core/dispatch_padding.cu"
+#include "cgbn/core/dispatch_resolver.cu"
+#include "cgbn/core/dispatch_masking.cu"
+#include "cgbn/core/dispatch_shift_rotate.cu"
+#include "cgbn/core/dispatch_dlimbs.cu"
 
 namespace cgbn {
 
@@ -297,31 +297,31 @@ class core_t {
 
 } /* namespace cgbn */
 
-#include "core_add_sub.cu"
-#include "core_short_math.cu"
-#include "core_compare.cu"
-#include "core_counting.cu"
-#include "core_insert_extract.cu"
-#include "core_logical.cu"
-#include "core_mul.cu"
-#include "core_divide_single.cu"
-#include "core_divide_multi.cu"
-#include "core_sqrt_single.cu"
-#include "core_sqrt_multi.cu"
-#include "core_gcd.cu"
-#include "core_binary_inverse.cu"
-#include "core_modular_inverse.cu"
-#include "core_mont.cu"
+#include "cgbn/core/core_add_sub.cu"
+#include "cgbn/core/core_short_math.cu"
+#include "cgbn/core/core_compare.cu"
+#include "cgbn/core/core_counting.cu"
+#include "cgbn/core/core_insert_extract.cu"
+#include "cgbn/core/core_logical.cu"
+#include "cgbn/core/core_mul.cu"
+#include "cgbn/core/core_divide_single.cu"
+#include "cgbn/core/core_divide_multi.cu"
+#include "cgbn/core/core_sqrt_single.cu"
+#include "cgbn/core/core_sqrt_multi.cu"
+#include "cgbn/core/core_gcd.cu"
+#include "cgbn/core/core_binary_inverse.cu"
+#include "cgbn/core/core_modular_inverse.cu"
+#include "cgbn/core/core_mont.cu"
 
 #if defined(XMP_IMAD)
-  #include "core_mul_imad.cu"
-  #include "core_mont_imad.cu"
+  #include "cgbn/core/core_mul_imad.cu"
+  #include "cgbn/core/core_mont_imad.cu"
 #elif defined(XMP_XMAD)
-  #include "core_mul_xmad.cu"
-  #include "core_mont_xmad.cu"
+  #include "cgbn/core/core_mul_xmad.cu"
+  #include "cgbn/core/core_mont_xmad.cu"
 #elif defined(XMP_WMAD)
-  #include "core_mul_wmad.cu"
-  #include "core_mont_wmad.cu"
+  #include "cgbn/core/core_mul_wmad.cu"
+  #include "cgbn/core/core_mont_wmad.cu"
 #else
   #warning One of XMP_IMAD, XMP_XMAD, XMP_WMAD must be defined
 #endif

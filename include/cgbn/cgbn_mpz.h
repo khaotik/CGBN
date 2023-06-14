@@ -262,4 +262,4 @@ struct cgbn_gmp_env_t {
   __host__ __device__ void       store(cgbn_local_t *address, const cgbn_t &a) const;
 };
 
-#include "impl_mpz.cc"
+#include "cgbn/impl_mpz.cc"

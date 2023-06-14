@@ -242,7 +242,7 @@ struct cgbn_cuda_env_t {
   __device__ __forceinline__ void       store(cgbn_local_t *address, const cgbn_t &a) const;
 };
 
-#include "impl_cuda.cu"
+#include "cgbn/impl_cuda.cu"
 
 /*
 experimental:
