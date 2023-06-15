@@ -135,10 +135,10 @@ template<uint32_t limbs, uint32_t max_rotation> __device__ __forceinline__ void 
 
 }  /* CGBN namespace */
 
-#include "cgbn/arith/static_divide.cu"
-#include "cgbn/arith/asm.cu"
-#include "cgbn/arith/chain.cu"
-#include "cgbn/arith/math.cu"
-#include "cgbn/arith/shifter.cu"
-#include "cgbn/arith/mp.cu"
-#include "cgbn/arith/dmp.cu"
+#include "cgbn/arith/static_divide.cuh"
+#include "cgbn/arith/asm.cuh"
+#include "cgbn/arith/chain.cuh"
+#include "cgbn/arith/math.cuh"
+#include "cgbn/arith/shifter.cuh"
+#include "cgbn/arith/mp.cuh"
+#include "cgbn/arith/dmp.cuh"

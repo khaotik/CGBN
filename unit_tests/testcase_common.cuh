@@ -6,7 +6,7 @@
 #include <cuda_runtime.h>
 #include <gmp.h> 
 
-#include "cgbn/cgbn.h"
+#include "cgbn/cgbn.cuh"
 
 template<typename params, bool is_gpu=false>
 struct TestTrait {

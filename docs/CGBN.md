@@ -5,7 +5,7 @@ The typical use case for CGBN is to build kernels that process large arrays of p
 We begin with a sample kernel that is passed an array of problem instances and for each instance, the kernel computes the sum of **_a + b_** and stores the result in **_r_**, where **_a_**, **_b_**, and **_r_** are 1024-bit numbers.
 
 ```
-#include "cgbn/cgbn.h"
+#include "cgbn/cgbn.cuh"
 
 // define a struct to hold each problem instance
 typedef struct {  
@@ -15,7 +15,7 @@ typedef struct {
 } problem_instance_t;
 
 #define TPI 8  // threads per instance (can be 4, 8, 16 or 32)
-               // IMPORTANT: do not define TPI before including "cgbn/cgbn.h", it'll cause compilation errors
+               // IMPORTANT: do not define TPI before including "cgbn/cgbn.cuh", it'll cause compilation errors
                 
 // helpful typedefs for kernel
 typedef cgbn_context_t<TPI>         context_t;

@@ -22,11 +22,11 @@ IN THE SOFTWARE.
 
 ***/
 
-#include "cgbn/core/dispatch_padding.cu"
-#include "cgbn/core/dispatch_resolver.cu"
-#include "cgbn/core/dispatch_masking.cu"
-#include "cgbn/core/dispatch_shift_rotate.cu"
-#include "cgbn/core/dispatch_dlimbs.cu"
+#include "cgbn/core/dispatch_padding.cuh"
+#include "cgbn/core/dispatch_resolver.cuh"
+#include "cgbn/core/dispatch_masking.cuh"
+#include "cgbn/core/dispatch_shift_rotate.cuh"
+#include "cgbn/core/dispatch_dlimbs.cuh"
 
 namespace cgbn {
 
@@ -297,31 +297,31 @@ class core_t {
 
 } /* namespace cgbn */
 
-#include "cgbn/core/core_add_sub.cu"
-#include "cgbn/core/core_short_math.cu"
-#include "cgbn/core/core_compare.cu"
-#include "cgbn/core/core_counting.cu"
-#include "cgbn/core/core_insert_extract.cu"
-#include "cgbn/core/core_logical.cu"
-#include "cgbn/core/core_mul.cu"
-#include "cgbn/core/core_divide_single.cu"
-#include "cgbn/core/core_divide_multi.cu"
-#include "cgbn/core/core_sqrt_single.cu"
-#include "cgbn/core/core_sqrt_multi.cu"
-#include "cgbn/core/core_gcd.cu"
-#include "cgbn/core/core_binary_inverse.cu"
-#include "cgbn/core/core_modular_inverse.cu"
-#include "cgbn/core/core_mont.cu"
+#include "cgbn/core/core_add_sub.cuh"
+#include "cgbn/core/core_short_math.cuh"
+#include "cgbn/core/core_compare.cuh"
+#include "cgbn/core/core_counting.cuh"
+#include "cgbn/core/core_insert_extract.cuh"
+#include "cgbn/core/core_logical.cuh"
+#include "cgbn/core/core_mul.cuh"
+#include "cgbn/core/core_divide_single.cuh"
+#include "cgbn/core/core_divide_multi.cuh"
+#include "cgbn/core/core_sqrt_single.cuh"
+#include "cgbn/core/core_sqrt_multi.cuh"
+#include "cgbn/core/core_gcd.cuh"
+#include "cgbn/core/core_binary_inverse.cuh"
+#include "cgbn/core/core_modular_inverse.cuh"
+#include "cgbn/core/core_mont.cuh"
 
 #if defined(XMP_IMAD)
-  #include "cgbn/core/core_mul_imad.cu"
-  #include "cgbn/core/core_mont_imad.cu"
+  #include "cgbn/core/core_mul_imad.cuh"
+  #include "cgbn/core/core_mont_imad.cuh"
 #elif defined(XMP_XMAD)
-  #include "cgbn/core/core_mul_xmad.cu"
-  #include "cgbn/core/core_mont_xmad.cu"
+  #include "cgbn/core/core_mul_xmad.cuh"
+  #include "cgbn/core/core_mont_xmad.cuh"
 #elif defined(XMP_WMAD)
-  #include "cgbn/core/core_mul_wmad.cu"
-  #include "cgbn/core/core_mont_wmad.cu"
+  #include "cgbn/core/core_mul_wmad.cuh"
+  #include "cgbn/core/core_mont_wmad.cuh"
 #else
   #warning One of XMP_IMAD, XMP_XMAD, XMP_WMAD must be defined
 #endif

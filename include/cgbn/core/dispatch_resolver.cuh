@@ -22,6 +22,6 @@ IN THE SOFTWARE.
 
 ***/
 
-#include "cgbn/core/padded_resolver.cu"
-#include "cgbn/core/warp_resolver.cu"
-#include "cgbn/core/subwarp_resolver.cu"
+#include "cgbn/core/padded_resolver.cuh"
+#include "cgbn/core/warp_resolver.cuh"
+#include "cgbn/core/subwarp_resolver.cuh"

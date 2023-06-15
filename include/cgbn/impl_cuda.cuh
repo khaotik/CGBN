@@ -22,10 +22,10 @@ IN THE SOFTWARE.
 
 ***/
 
-#include "cgbn/arith/arith.h"
-#include "cgbn/core/unpadded.cu"
-#include "cgbn/core/core.cu"
-#include "cgbn/core/core_singleton.cu"
+#include "cgbn/arith/arith.cuh"
+#include "cgbn/core/unpadded.cuh"
+#include "cgbn/core/core.cuh"
+#include "cgbn/core/core_singleton.cuh"
 
 #if(__CUDACC_VER_MAJOR__<9 || (__CUDACC_VER_MAJOR__==9 && __CUDACC_VER_MINOR__<2))
   #if __CUDA_ARCH__>=700

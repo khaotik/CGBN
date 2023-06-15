@@ -28,7 +28,7 @@ IN THE SOFTWARE.
 #include <stdlib.h>
 #include <cuda.h>
 #include <gmp.h>
-#include "cgbn/cgbn.h"
+#include "cgbn/cgbn.cuh"
 #include "../utility/cpu_support.h"
 #include "../utility/cpu_simple_bn_math.h"
 #include "../utility/gpu_support.h"

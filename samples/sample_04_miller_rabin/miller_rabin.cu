@@ -27,7 +27,7 @@ IN THE SOFTWARE.
 #include <stdlib.h>
 #include <cuda.h>
 #include <gmp.h>
-#include "cgbn/cgbn.h"
+#include "cgbn/cgbn.cuh"
 #include "../utility/support.h"
 
 // For this example, there are quite a few template parameters that are used to generate the actual code.
