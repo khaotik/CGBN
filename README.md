@@ -28,3 +28,14 @@ The original `README.md` is available in this repo as `README_ORIG.md`.
 - To run tests, run `./tester` under build directory
 
 - To run benchmark, under build directory, run `./xmp_bench` for GPU and `./gmp_bench` for CPU
+
+### Embedding into other project with CMake
+
+- In your project, put this repo into a separate directory such as `<project-root>/3rdparty/CGBN`
+
+- Add following lines into your main `CMakeLists.txt`:
+
+```
+add_subdirectory("${PROJECT_SOURCE_DIR}/3rdparty/CGBN")
+target_link_libraries(${YOUR_TARGET} PRIVATE CGBN)
+```
