@@ -28,42 +28,42 @@ struct TestImpl<test_rem_wide_1, is_gpu, params> {
   static const uint32_t TPI=params::TPI;
   static const uint32_t BITS=params::BITS;
 
-  typedef cgbn_context_t<TPI, params, is_gpu>    context_t;
-  typedef cgbn_env_t<context_t, BITS>    env_t;
-  typedef typename env_t::cgbn_t         bn_t;
-  typedef typename env_t::cgbn_wide_t    bn_wide_t;
+  typedef cgbn::BnContext<TPI, params, is_gpu>    context_t;
+  typedef cgbn::BnEnv<context_t, BITS>    env_t;
+  typedef typename env_t::Reg         bn_t;
+  typedef typename env_t::WideReg    bn_wide_t;
 
   public:
   __device__ __host__ static void run(typename TestTrait<params>::input_t *inputs, typename TestTrait<params>::output_t *outputs, int32_t instance) {
-    context_t context(cgbn_print_monitor);
+    context_t context(cgbn::MonitorKind::kPrint);
     env_t     env(context);
     bn_t      h1, h2, d, r1;
     bn_wide_t xh;
     int32_t   compare;
 
-    cgbn_load(env, h1, &(inputs[instance].h1));
-    cgbn_load(env, h2, &(inputs[instance].h2));
-    cgbn_load(env, xh._low, &(inputs[instance].x1));
+    cgbn::load(env, h1, &(inputs[instance].h1));
+    cgbn::load(env, h2, &(inputs[instance].h2));
+    cgbn::load(env, xh._low, &(inputs[instance].x1));
 
-    compare=cgbn_compare(env, h1, h2);
+    compare=cgbn::compare(env, h1, h2);
     if(compare==0)
       return;
 
     if(compare>0) {
-      cgbn_set(env, xh._high, h2);
-      cgbn_set(env, d, h1);
+      cgbn::set(env, xh._high, h2);
+      cgbn::set(env, d, h1);
     }
     else {
-      cgbn_set(env, xh._high, h1);
-      cgbn_set(env, d, h2);
+      cgbn::set(env, xh._high, h1);
+      cgbn::set(env, d, h2);
     }
 
-    if(!cgbn_equals_ui32(env, d, 0))
-      cgbn_rem_wide(env, r1, xh, d);
+    if(!cgbn::equals_ui32(env, d, 0))
+      cgbn::rem_wide(env, r1, xh, d);
     else
-      cgbn_set_ui32(env, r1, 0);
+      cgbn::set_ui32(env, r1, 0);
 
-    cgbn_store(env, &(outputs[instance].r1), r1);
+    cgbn::store(env, &(outputs[instance].r1), r1);
   }
 };
 

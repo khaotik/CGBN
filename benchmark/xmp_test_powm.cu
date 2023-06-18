@@ -92,7 +92,7 @@ __global__ void x_test_powm_odd_kernel(typename xmp_tester<tpi, bits>::x_instanc
   if(instance>=count)
     return;
   
-  xmp_tester<tpi, bits> tester(cgbn_no_checks, NULL, instance);
+  xmp_tester<tpi, bits> tester(cgbn::MonitorKind::kNone, NULL, instance);
   tester.x_test_powm_odd(instances);
 }
 

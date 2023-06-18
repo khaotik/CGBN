@@ -21,8 +21,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+namespace cgbn { namespace core {
+#pragma once
 
-namespace cgbn {
 
 template<class params>
 class unpadded_t {
@@ -35,7 +36,7 @@ class unpadded_t {
   static const uint32_t        MAX_ROTATION=params::MAX_ROTATION;
   static const uint32_t        SHM_LIMIT=params::SHM_LIMIT;
   static const bool            CONSTANT_TIME=params::CONSTANT_TIME;
-  static const cgbn_syncable_t SYNCABLE=params::SYNCABLE;  
+  static const SyncScope SYNCABLE=params::SYNCABLE;  
 };
 
-} /* namespace cgbn */
+}} // namespace cgbn::core

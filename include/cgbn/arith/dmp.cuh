@@ -21,9 +21,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+namespace cgbn { namespace core {
 #pragma once
 
-namespace cgbn {
 
 template<uint32_t tpi, uint32_t limbs>
 __device__ __forceinline__ bool dequals(const uint32_t sync, const uint32_t a[limbs], const uint32_t b[limbs]) {
@@ -371,4 +371,5 @@ __device__ __forceinline__ void fwgather(const uint32_t sync, uint32_t dest[limb
 
 
 
-} /* namespace cgbn */
+
+}} // namespace cgbn::core

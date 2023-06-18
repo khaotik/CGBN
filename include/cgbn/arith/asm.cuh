@@ -21,9 +21,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+namespace cgbn { namespace core {
 #pragma once
 
-namespace cgbn {
 __device__ __forceinline__ uint32_t add_cc(uint32_t a, uint32_t b) {
   uint32_t r;
 
@@ -436,7 +436,4 @@ __device__ __forceinline__ uint64_t make_wide(uint32_t lo, uint32_t hi) {
   asm volatile ("mov.b64 %0,{%1,%2};" : "=l"(r) : "r"(lo), "r"(hi));
   return r;
 }
-
-} /* namespace cgbn */
-
-
+}} // namespace cgbn::core

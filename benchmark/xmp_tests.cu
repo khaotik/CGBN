@@ -49,7 +49,7 @@ __global__ void x_test_add_kernel(typename xmp_tester<tpi, bits>::x_instance_t *
   if(instance>=count)
     return;
   
-  xmp_tester<tpi, bits> tester(cgbn_no_checks, NULL, instance);
+  xmp_tester<tpi, bits> tester(cgbn::MonitorKind::kNone, NULL, instance);
   tester.x_test_add(instances);
 }
 
@@ -81,7 +81,7 @@ __global__ void x_test_sub_kernel(typename xmp_tester<tpi, bits>::x_instance_t *
   if(instance>=count)
     return;
   
-  xmp_tester<tpi, bits> tester(cgbn_no_checks, NULL, instance);
+  xmp_tester<tpi, bits> tester(cgbn::MonitorKind::kNone, NULL, instance);
   tester.x_test_sub(instances);
 }
 
@@ -115,7 +115,7 @@ __global__ void x_test_accumulate_kernel(typename xmp_tester<tpi, bits>::x_insta
   if(instance>=count)
     return;
   
-  xmp_tester<tpi, bits> tester(cgbn_no_checks, NULL, instance);
+  xmp_tester<tpi, bits> tester(cgbn::MonitorKind::kNone, NULL, instance);
   tester.x_test_accumulate(instances);
 }
 
@@ -150,7 +150,7 @@ __global__ void x_test_mul_kernel(typename xmp_tester<tpi, bits>::x_instance_t *
   if(instance>=count)
     return;
   
-  xmp_tester<tpi, bits> tester(cgbn_no_checks, NULL, instance);
+  xmp_tester<tpi, bits> tester(cgbn::MonitorKind::kNone, NULL, instance);
   tester.x_test_mul(instances);
 }
 
@@ -188,7 +188,7 @@ __global__ void x_test_div_qr_kernel(typename xmp_tester<tpi, bits>::x_instance_
   if(instance>=count)
     return;
   
-  xmp_tester<tpi, bits> tester(cgbn_no_checks, NULL, instance);
+  xmp_tester<tpi, bits> tester(cgbn::MonitorKind::kNone, NULL, instance);
   tester.x_test_div_qr(instances);
 }
 
@@ -221,7 +221,7 @@ __global__ void x_test_sqrt_kernel(typename xmp_tester<tpi, bits>::x_instance_t 
   if(instance>=count)
     return;
   
-  xmp_tester<tpi, bits> tester(cgbn_no_checks, NULL, instance);
+  xmp_tester<tpi, bits> tester(cgbn::MonitorKind::kNone, NULL, instance);
   tester.x_test_sqrt(instances);
 }
 
@@ -262,7 +262,7 @@ __global__ void x_test_mont_reduce_kernel(typename xmp_tester<tpi, bits>::x_inst
   if(instance>=count)
     return;
   
-  xmp_tester<tpi, bits> tester(cgbn_no_checks, NULL, instance);
+  xmp_tester<tpi, bits> tester(cgbn::MonitorKind::kNone, NULL, instance);
   tester.x_test_mont_reduce(instances);
 }
 
@@ -296,7 +296,7 @@ __global__ void x_test_gcd_kernel(typename xmp_tester<tpi, bits>::x_instance_t *
   if(instance>=count)
     return;
   
-  xmp_tester<tpi, bits> tester(cgbn_no_checks, NULL, instance);
+  xmp_tester<tpi, bits> tester(cgbn::MonitorKind::kNone, NULL, instance);
   tester.x_test_gcd(instances);
 }
 
@@ -330,6 +330,6 @@ __global__ void x_test_modinv_kernel(typename xmp_tester<tpi, bits>::x_instance_
   if(instance>=count)
     return;
   
-  xmp_tester<tpi, bits> tester(cgbn_no_checks, NULL, instance);
+  xmp_tester<tpi, bits> tester(cgbn::MonitorKind::kNone, NULL, instance);
   tester.x_test_modinv(instances);
 }

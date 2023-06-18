@@ -21,8 +21,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+namespace cgbn { namespace core {
+#pragma once
 
-namespace cgbn {
 
 #if 1
 template<class env>
@@ -463,4 +464,5 @@ __device__ __forceinline__ void fwmont_mul(uint32_t r[LIMBS], const uint32_t a[L
 }
 #endif
 
-} /* namespace cgbn */
+
+}} // namespace cgbn::core

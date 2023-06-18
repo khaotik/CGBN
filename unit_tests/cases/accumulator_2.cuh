@@ -29,14 +29,14 @@ struct TestImpl<test_accumulator_2, is_gpu, params> {
   static const uint32_t TPI=params::TPI;
   static const uint32_t BITS=params::BITS;
 
-  typedef cgbn_context_t<TPI, params, is_gpu>        context_t;
-  typedef cgbn_env_t<context_t, BITS>        env_t;
-  typedef typename env_t::cgbn_t             bn_t;
-  typedef typename env_t::cgbn_accumulator_t bn_acc_t;
+  typedef cgbn::BnContext<TPI, params, is_gpu>        context_t;
+  typedef cgbn::BnEnv<context_t, BITS>        env_t;
+  typedef typename env_t::Reg             bn_t;
+  typedef typename env_t::AccumReg bn_acc_t;
 
   public:
   __device__ __host__ static void run(typename TestTrait<params>::input_t *inputs, typename TestTrait<params>::output_t *outputs, int32_t instance) {
-    context_t context(cgbn_print_monitor);
+    context_t context(cgbn::MonitorKind::kPrint);
     env_t     env(context);
     bn_acc_t  acc;
     bn_t      x, r1, r2;
@@ -46,26 +46,26 @@ struct TestImpl<test_accumulator_2, is_gpu, params> {
     u1=inputs[instance].u[0];
 
     if((u1 & 0x01)==0) {
-      cgbn_load(env, x, &(inputs[instance].h1));
-      cgbn_set(env, acc, x);
+      cgbn::load(env, x, &(inputs[instance].h1));
+      cgbn::set(env, acc, x);
     }
     else {
-      cgbn_set_ui32(env, acc, inputs[instance].u[1]);
+      cgbn::set_ui32(env, acc, inputs[instance].u[1]);
     }
 
     for(int32_t index=1;index<20;index++) {
       u1=u1>>1;
       if((u1 & 0x01)==0)
-        cgbn_add_ui32(env, acc, inputs[instance].u[index]);
+        cgbn::add_ui32(env, acc, inputs[instance].u[index]);
       else
-        cgbn_sub_ui32(env, acc, inputs[instance].u[index]);
+        cgbn::sub_ui32(env, acc, inputs[instance].u[index]);
     }
 
-    carry=cgbn_resolve(env, r1, acc);
-    cgbn_set_ui32(env, r2, (uint32_t)carry);
+    carry=cgbn::resolve(env, r1, acc);
+    cgbn::set_ui32(env, r2, (uint32_t)carry);
 
-    cgbn_store(env, &(outputs[instance].r1), r1);
-    cgbn_store(env, &(outputs[instance].r2), r2);
+    cgbn::store(env, &(outputs[instance].r1), r1);
+    cgbn::store(env, &(outputs[instance].r2), r2);
   }
 };
 

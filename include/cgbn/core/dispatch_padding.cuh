@@ -21,8 +21,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+namespace cgbn { namespace core {
+#pragma once
 
-namespace cgbn {
 
 template<class core, uint32_t padding>
 struct dispatch_padding_t {
@@ -88,4 +89,5 @@ struct dispatch_padding_t<core, 0> {
   }
 };
 
-} /* namespace cgbn */
+
+}} // namespace cgbn::core

@@ -56,16 +56,17 @@ IN THE SOFTWARE.
  *
  ************************************************************************************************/
  
-// IMPORTANT:  DO NOT DEFINE TPI OR BITS BEFORE INCLUDING CGBN
-#define TPI 32
-#define BITS 1024
-#define INSTANCES 100000
+constexpr uint32_t
+  TPI = 32,
+  BITS = 1024,
+  INSTANCES = 100000;
 
 // Declare the instance type
+using Mem = cgbn::Mem<BITS>;
 typedef struct {
-  cgbn_mem_t<BITS> a;
-  cgbn_mem_t<BITS> b;
-  cgbn_mem_t<BITS> sum;
+  Mem a;
+  Mem b;
+  Mem sum;
 } instance_t;
 
 // support routine to generate random instances
@@ -94,11 +95,11 @@ void verify_results(instance_t *instances, uint32_t count) {
 }
 
 // helpful typedefs for the kernel
-using context_t = cgbn_context_t<TPI, cgbn_cuda_default_parameters_t>;
-using env_t = cgbn_env_t<context_t, BITS>;
+using context_t = cgbn::BnContext<TPI, cgbn::cgbn_cuda_default_parameters_t>;
+using env_t = cgbn::BnEnv<context_t, BITS>;
 
 // the actual kernel
-__global__ void kernel_add(cgbn_error_report_t *report, instance_t *instances, uint32_t count) {
+__global__ void kernel_add(cgbn::ErrorReport *report, instance_t *instances, uint32_t count) {
   int32_t instance;
   
   // decode an instance number from the blockIdx and threadIdx
@@ -106,19 +107,19 @@ __global__ void kernel_add(cgbn_error_report_t *report, instance_t *instances, u
   if(instance>=count)
     return;
 
-  context_t      bn_context(cgbn_report_monitor, report, instance);   // construct a context
+  context_t      bn_context(cgbn::MonitorKind::kReport, report, instance);   // construct a context
   env_t          bn_env(bn_context.env<env_t>());                     // construct an environment for 1024-bit math
-  env_t::cgbn_t  a, b, r;                                             // define a, b, r as 1024-bit bignums
+  env_t::Reg  a, b, r;                                             // define a, b, r as 1024-bit bignums
 
-  cgbn_load(bn_env, a, &(instances[instance].a));      // load my instance's a value
-  cgbn_load(bn_env, b, &(instances[instance].b));      // load my instance's b value
-  cgbn_add(bn_env, r, a, b);                           // r=a+b
-  cgbn_store(bn_env, &(instances[instance].sum), r);   // store r into sum
+  cgbn::load(bn_env, a, &(instances[instance].a));      // load my instance's a value
+  cgbn::load(bn_env, b, &(instances[instance].b));      // load my instance's b value
+  cgbn::add(bn_env, r, a, b);                           // r=a+b
+  cgbn::store(bn_env, &(instances[instance].sum), r);   // store r into sum
 }
 
 int main() {
   instance_t          *instances, *gpuInstances;
-  cgbn_error_report_t *report;
+  cgbn::ErrorReport *report;
   
   printf("Genereating instances ...\n");
   instances=generate_instances(INSTANCES);
@@ -129,7 +130,7 @@ int main() {
   CUDA_CHECK(cudaMemcpy(gpuInstances, instances, sizeof(instance_t)*INSTANCES, cudaMemcpyHostToDevice));
   
   // create a cgbn_error_report for CGBN to report back errors
-  CUDA_CHECK(cgbn_error_report_alloc(&report)); 
+  CUDA_CHECK(cgbn::cgbn_error_report_alloc(&report)); 
   
   printf("Running GPU kernel ...\n");
   // launch with 32 threads per instance, 128 threads (4 instances) per block
@@ -149,5 +150,5 @@ int main() {
   // clean up
   free(instances);
   CUDA_CHECK(cudaFree(gpuInstances));
-  CUDA_CHECK(cgbn_error_report_free(report));
+  CUDA_CHECK(cgbn::cgbn_error_report_free(report));
 }

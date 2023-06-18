@@ -73,29 +73,30 @@ void from_mpz(uint32_t *words, uint32_t count, mpz_t value) {
 }
 
 template<uint32_t tpi, uint32_t bits>
-class xmp_tester {
-  public:
-  
+struct xmp_tester {
+  using Mem = cgbn::Mem<bits>;
+  using context_t =  typename cgbn::BnContext<tpi, cgbn::cgbn_cuda_default_parameters_t>;
+  using env_t = typename cgbn::BnEnv<context_t, bits>;
+  using bn_t = typename env_t::Reg;
+  using bn_local_t = typename env_t::LocalMem;
+  using bn_wide_t = typename env_t::WideReg;
+  using bn_accumulator_t = typename env_t::AccumReg;
   typedef struct {
-    cgbn_mem_t<bits> x0, x1, x2;
-    cgbn_mem_t<bits> o0, o1;
-    cgbn_mem_t<bits> w0, w1;
-    cgbn_mem_t<bits> r;
+    Mem x0, x1, x2;
+    Mem o0, o1;
+    Mem w0, w1;
+    Mem r;
   } x_instance_t;
   
-  using context_t =  cgbn_context_t<tpi, cgbn_cuda_default_parameters_t>;
-  typedef cgbn_env_t<context_t, bits>        env_t;
-  typedef typename env_t::cgbn_t             bn_t;
-  typedef typename env_t::cgbn_local_t       bn_local_t;
-  typedef typename env_t::cgbn_wide_t        bn_wide_t;
-  typedef typename env_t::cgbn_accumulator_t bn_accumulator_t;
 
   context_t _context;
   env_t     _env;
   int32_t   _instance;
   
-  __device__ __forceinline__ xmp_tester(cgbn_monitor_t monitor, cgbn_error_report_t *report, int32_t instance) : _context(monitor, report, (uint32_t)instance), _env(_context), _instance(instance) {
-  }  
+  __device__ __forceinline__ xmp_tester(
+      cgbn::MonitorKind monitor,
+      cgbn::ErrorReport *report, int32_t instance
+  ): _context(monitor, report, (uint32_t)instance), _env(_context), _instance(instance) {}  
 
   static __host__ x_instance_t *x_generate_instances(gmp_randstate_t state, uint32_t count) {
     x_instance_t *instances=(x_instance_t *)malloc(sizeof(x_instance_t)*count);

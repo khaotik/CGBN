@@ -41,16 +41,17 @@ IN THE SOFTWARE.
  ************************************************************************************************/
  
 
-// IMPORTANT:  DO NOT DEFINE TPI OR BITS BEFORE INCLUDING CGBN
-#define TPI 32
-#define BITS 1024
-#define INSTANCES 100000
+constexpr uint32_t
+  TPI=32,
+  BITS=1024,
+  INSTANCES=100000;
 
 // Declare the instance type
+using Mem = cgbn::Mem<BITS>;
 typedef struct {
-  cgbn_mem_t<BITS> x;
-  cgbn_mem_t<BITS> m;
-  cgbn_mem_t<BITS> inverse;
+  Mem x;
+  Mem m;
+  Mem inverse;
 } instance_t;
 
 // support routine to generate random instances
@@ -96,11 +97,11 @@ void verify_results(instance_t *instances, uint32_t count) {
 }
 
 // helpful typedefs for the kernel
-using context_t = cgbn_context_t<TPI, cgbn_cuda_default_parameters_t>;
-using env_t = cgbn_env_t<context_t, BITS>;
+using context_t = cgbn::BnContext<TPI, cgbn::cgbn_cuda_default_parameters_t>;
+using env_t = cgbn::BnEnv<context_t, BITS>;
 
 // the actual kernel
-__global__ void kernel_modinv_odd(cgbn_error_report_t *report, instance_t *instances, uint32_t count) {
+__global__ void kernel_modinv_odd(cgbn::ErrorReport *report, instance_t *instances, uint32_t count) {
   int32_t instance;
   
   // decode an instance number from the blockIdx and threadIdx
@@ -108,79 +109,79 @@ __global__ void kernel_modinv_odd(cgbn_error_report_t *report, instance_t *insta
   if(instance>=count)
     return;
 
-  context_t          bn_context(cgbn_report_monitor, report, instance);   // construct a context
+  context_t          bn_context(cgbn::MonitorKind::kReport, report, instance);   // construct a context
   env_t              bn_env(bn_context);                                  // construct an environment for 1024-bit math
-  env_t::cgbn_t      m, r, s, u, v;                                       // define m, r, s, u, v as 1024-bit bignums
-  env_t::cgbn_wide_t w;                                                   // define w as a wide (2048-bit) bignum
+  env_t::Reg      m, r, s, u, v;                                       // define m, r, s, u, v as 1024-bit bignums
+  env_t::WideReg w;                                                   // define w as a wide (2048-bit) bignum
   uint32_t           np0;
   int32_t            k=0, carry, compare;
   
-  cgbn_load(bn_env, m, &(instances[instance].m));
-  cgbn_load(bn_env, v, &(instances[instance].x));
+  cgbn::load(bn_env, m, &(instances[instance].m));
+  cgbn::load(bn_env, v, &(instances[instance].x));
 
-  cgbn_set(bn_env, u, m);
-  cgbn_set_ui32(bn_env, r, 0);
-  cgbn_set_ui32(bn_env, s, 1);
+  cgbn::set(bn_env, u, m);
+  cgbn::set_ui32(bn_env, r, 0);
+  cgbn::set_ui32(bn_env, s, 1);
   
   while(true) {
     k++;
-    if(cgbn_get_ui32(bn_env, u)%2==0) {
-      cgbn_rotate_right(bn_env, u, u, 1);
-      cgbn_add(bn_env, s, s, s);
+    if(cgbn::get_ui32(bn_env, u)%2==0) {
+      cgbn::rotate_right(bn_env, u, u, 1);
+      cgbn::add(bn_env, s, s, s);
     }
-    else if(cgbn_get_ui32(bn_env, v)%2==0) {
-      cgbn_rotate_right(bn_env, v, v, 1);
-      cgbn_add(bn_env, r, r, r);
+    else if(cgbn::get_ui32(bn_env, v)%2==0) {
+      cgbn::rotate_right(bn_env, v, v, 1);
+      cgbn::add(bn_env, r, r, r);
     }
     else {
-      compare=cgbn_compare(bn_env, u, v);
+      compare=cgbn::compare(bn_env, u, v);
       if(compare>0) {
-        cgbn_add(bn_env, r, r, s);
-        cgbn_sub(bn_env, u, u, v);
-        cgbn_rotate_right(bn_env, u, u, 1);
-        cgbn_add(bn_env, s, s, s);
+        cgbn::add(bn_env, r, r, s);
+        cgbn::sub(bn_env, u, u, v);
+        cgbn::rotate_right(bn_env, u, u, 1);
+        cgbn::add(bn_env, s, s, s);
       }
       else if(compare<0) {
-        cgbn_add(bn_env, s, s, r);
-        cgbn_sub(bn_env, v, v, u);
-        cgbn_rotate_right(bn_env, v, v, 1);
-        cgbn_add(bn_env, r, r, r);
+        cgbn::add(bn_env, s, s, r);
+        cgbn::sub(bn_env, v, v, u);
+        cgbn::rotate_right(bn_env, v, v, 1);
+        cgbn::add(bn_env, r, r, r);
       }
       else
         break;
     }
   }
   
-  if(!cgbn_equals_ui32(bn_env, u, 1)) 
-    cgbn_set_ui32(bn_env, r, 0);
+  if(!cgbn::equals_ui32(bn_env, u, 1)) 
+    cgbn::set_ui32(bn_env, r, 0);
   else {  
     // last r update
-    carry=cgbn_add(bn_env, r, r, r);
+    carry=cgbn::add(bn_env, r, r, r);
     if(carry==1) 
-      cgbn_sub(bn_env, r, r, m);
+      cgbn::sub(bn_env, r, r, m);
 
     // clean up
-    if(cgbn_compare(bn_env, r, m)>0)
-      cgbn_sub(bn_env, r, r, m);
-    cgbn_sub(bn_env, r, m, r);
+    if(cgbn::compare(bn_env, r, m)>0)
+      cgbn::sub(bn_env, r, r, m);
+    cgbn::sub(bn_env, r, m, r);
 
     // faster cleanup, taking advantage of the built-in mont_reduce_wide.
-    np0=-cgbn_binary_inverse_ui32(bn_env, cgbn_get_ui32(bn_env, m));
-    cgbn_set(bn_env, w._low, r);
-    cgbn_set_ui32(bn_env, w._high, 0);    
-    cgbn_mont_reduce_wide(bn_env, r, w, m, np0);
+    np0=-cgbn::binary_inverse_ui32(bn_env, cgbn::get_ui32(bn_env, m));
+    cgbn::set(bn_env, w._low, r);
+    cgbn::set_ui32(bn_env, w._high, 0);    
+    cgbn::mont_reduce_wide(bn_env, r, w, m, np0);
 
-    cgbn_shift_left(bn_env, w._low, r, 2*BITS-k);
-    cgbn_shift_right(bn_env, w._high, r, k-BITS);
-    cgbn_mont_reduce_wide(bn_env, r, w, m, np0);
+    cgbn::shift_left(bn_env, w._low, r, 2*BITS-k);
+    cgbn::shift_right(bn_env, w._high, r, k-BITS);
+    cgbn::mont_reduce_wide(bn_env, r, w, m, np0);
   }
 
-  cgbn_store(bn_env, &(instances[instance].inverse), r);
+  cgbn::store(bn_env, &(instances[instance].inverse), r);
 }
 
 int main() {
   instance_t          *instances, *gpuInstances;
-  cgbn_error_report_t *report;
+  cgbn::ErrorReport *report;
   
   printf("Genereating instances ...\n");
   instances=generate_instances(INSTANCES);
@@ -190,8 +191,8 @@ int main() {
   CUDA_CHECK(cudaMalloc((void **)&gpuInstances, sizeof(instance_t)*INSTANCES));
   CUDA_CHECK(cudaMemcpy(gpuInstances, instances, sizeof(instance_t)*INSTANCES, cudaMemcpyHostToDevice));
   
-  // create a cgbn_error_report for CGBN to report back errors
-  CUDA_CHECK(cgbn_error_report_alloc(&report)); 
+  // create a cgbn::cgbn_error_report for CGBN to report back errors
+  CUDA_CHECK(cgbn::cgbn_error_report_alloc(&report)); 
   
   printf("Running GPU kernel ...\n");
   // launch with 32 threads per instance, 128 threads (4 instances) per block
@@ -211,5 +212,5 @@ int main() {
   // clean up
   free(instances);
   CUDA_CHECK(cudaFree(gpuInstances));
-  CUDA_CHECK(cgbn_error_report_free(report));
+  CUDA_CHECK(cgbn::cgbn_error_report_free(report));
 }

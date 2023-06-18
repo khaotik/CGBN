@@ -21,8 +21,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+namespace cgbn { namespace core {
+#pragma once
 
-namespace cgbn {
 
 template<class env> 
 __device__ __forceinline__ uint32_t core_t<env>::pop_count(const uint32_t a[LIMBS]) {
@@ -93,4 +94,5 @@ __device__ __forceinline__ uint32_t core_t<env>::ctzt(const uint32_t a[LIMBS]) {
   return umin(bottomctz, TPI);
 }
 
-} /* namespace cgbn */
+
+}} // namespace cgbn::core

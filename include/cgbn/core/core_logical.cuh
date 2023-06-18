@@ -21,8 +21,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+namespace cgbn { namespace core {
+#pragma once
 
-namespace cgbn {
 
 template<class env> 
 __device__ __forceinline__ void core_t<env>::bitwise_and(uint32_t r[LIMBS], const uint32_t a[LIMBS], const uint32_t b[LIMBS]) {
@@ -68,5 +69,6 @@ __device__ __forceinline__ void core_t<env>::bitwise_select(uint32_t r[LIMBS], c
     r[index]=(set[index] & select[index]) | (clear[index] & ~select[index]);
 }
 
-} /* namespace cgbn */
 
+
+}} // namespace cgbn::core

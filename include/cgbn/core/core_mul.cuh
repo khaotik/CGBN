@@ -21,8 +21,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+namespace cgbn { namespace core {
+#pragma once
 
-namespace cgbn {
 
 template<class env>
 __device__ __forceinline__ void core_t<env>::mul(uint32_t &r, const uint32_t a, const uint32_t b, const uint32_t add) {
@@ -86,4 +87,5 @@ __device__ __forceinline__ void core_t<env>::mul_wide(uint32_t &lo, uint32_t &hi
   fast_propagate_add(p1, hi);
 }
 
-} /* namespace cgbn */
+
+}} // namespace cgbn::core

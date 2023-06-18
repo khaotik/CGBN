@@ -23,7 +23,6 @@ IN THE SOFTWARE.
 ***/
 #pragma once
 
-namespace cgbn {
 
 /* defines */
 #ifdef NDEBUG
@@ -31,6 +30,8 @@ namespace cgbn {
 #else
 #define ASM_ERROR(message)
 #endif
+
+namespace cgbn { namespace core {
 
 /* static math */
 template<uint32_t denominator> __device__ __forceinline__ uint32_t static_divide_small(uint32_t numerator);
@@ -134,7 +135,7 @@ template<uint32_t limbs> __device__ __forceinline__ void     mpmul(uint32_t lo[l
 template<uint32_t limbs, uint32_t max_rotation> __device__ __forceinline__ void mprotate_left(uint32_t r[limbs], const uint32_t a[limbs], const uint32_t numlimbs);
 template<uint32_t limbs, uint32_t max_rotation> __device__ __forceinline__ void mprotate_right(uint32_t r[limbs], const uint32_t a[limbs], const uint32_t numlimbs);
 
-}  /* CGBN namespace */
+}} // namespace cgbn::core
 
 #include "cgbn/arith/static_divide.cuh"
 #include "cgbn/arith/asm.cuh"
@@ -143,3 +144,4 @@ template<uint32_t limbs, uint32_t max_rotation> __device__ __forceinline__ void 
 #include "cgbn/arith/shifter.cuh"
 #include "cgbn/arith/mp.cuh"
 #include "cgbn/arith/dmp.cuh"
+

@@ -21,8 +21,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+namespace cgbn { namespace core {
+#pragma once
 
-namespace cgbn {
 
 template<class env>
 __device__ __forceinline__ bool core_t<env>::equals(const uint32_t a[LIMBS], const uint32_t b[LIMBS]) {
@@ -34,4 +35,5 @@ __device__ __forceinline__ int32_t core_t<env>::compare(const uint32_t a[LIMBS],
   return dcompare<TPI, LIMBS>(sync_mask(), a, b);
 }
 
-} /* namespace cgbn */
+
+}} // namespace cgbn::core

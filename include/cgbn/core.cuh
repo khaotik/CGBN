@@ -29,7 +29,7 @@ IN THE SOFTWARE.
 #include "cgbn/core/dispatch_shift_rotate.cuh"
 #include "cgbn/core/dispatch_dlimbs.cuh"
 
-namespace cgbn {
+namespace cgbn { namespace core {
 
 typedef struct {
   // used in gcd
@@ -58,7 +58,7 @@ class core_t {
   static const uint32_t        MAX_ROTATION=env::MAX_ROTATION;
   static const uint32_t        SHM_LIMIT=env::SHM_LIMIT;
   static const bool            CONSTANT_TIME=env::CONSTANT_TIME;
-  static const cgbn_syncable_t SYNCABLE=env::SYNCABLE;  
+  static const SyncScope SYNCABLE=env::SYNCABLE;  
 
   static const uint32_t        TPI_ONES=(1ull<<TPI)-1;
   static const uint32_t        PAD_THREAD=(BITS/32)/LIMBS;
@@ -173,7 +173,7 @@ class core_t {
   
   __device__ __forceinline__ static uint32_t sync_mask() {
     // the following is sure to blow up on gcd and modinv and possibly others
-    // return (SYNCABLE==cgbn_instance_converged) ? instance_sync_mask() : 0xFFFFFFFF;
+    // return (SYNCABLE==ConvergenceKind::kInstance) ? instance_sync_mask() : 0xFFFFFFFF;
 
     // instead, for now, always use
     return instance_sync_mask();
@@ -296,7 +296,8 @@ class core_t {
   __device__ __forceinline__ static void     mont_reduce_wide(uint32_t r[LIMBS], const uint32_t lo[LIMBS], const uint32_t hi[LIMBS], const uint32_t n[LIMBS], const uint32_t np0, const bool zero);
 };
 
-} /* namespace cgbn */
+}} // namespace cgbn::core
+
 
 #include "cgbn/core/core_add_sub.cuh"
 #include "cgbn/core/core_short_math.cuh"

@@ -21,8 +21,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+#pragma once
+namespace cgbn { namespace core {
 
-namespace cgbn {
 
 /* single limb version */
 template<class env>
@@ -113,5 +114,6 @@ __device__ __forceinline__ void core_t<env>::mont_reduce_wide(uint32_t &r, const
   r=r0; 
 }
 
-} /* namespace cgbn */
 
+
+}} // namespace cgbn::core

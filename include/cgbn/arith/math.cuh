@@ -21,8 +21,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+namespace cgbn { namespace core {
+#pragma once
 
-namespace cgbn {
 
 __device__ __forceinline__ int32_t ushiftamt(uint32_t x) {
   uint32_t r;
@@ -356,4 +357,4 @@ __device__ __forceinline__ uint32_t usqrt_div(const uint32_t lo, const uint32_t 
   return udiv(x0, x1, d, approx);
 }
 
-} /* namespace cgbn */
+}} // namespace cgbn::core

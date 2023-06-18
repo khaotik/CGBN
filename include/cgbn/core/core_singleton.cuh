@@ -21,8 +21,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+namespace cgbn { namespace core {
+#pragma once
 
-namespace cgbn {
 
 template<class env, uint32_t limbs>
 class core_singleton_t;
@@ -166,4 +167,5 @@ class core_singleton_t {
   }
 };
 
-} /* namespace cgbn */
+
+}} // namespace cgbn::core

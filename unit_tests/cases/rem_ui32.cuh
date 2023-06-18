@@ -28,27 +28,27 @@ struct TestImpl<test_rem_ui32_1, is_gpu, params> {
   static const uint32_t TPI=params::TPI;
   static const uint32_t BITS=params::BITS;
 
-  typedef cgbn_context_t<TPI, params, is_gpu>    context_t;
-  typedef cgbn_env_t<context_t, BITS>    env_t;
-  typedef typename env_t::cgbn_t         bn_t;
+  typedef cgbn::BnContext<TPI, params, is_gpu>    context_t;
+  typedef cgbn::BnEnv<context_t, BITS>    env_t;
+  typedef typename env_t::Reg         bn_t;
 
   public:
   __device__ __host__ static void run(typename TestTrait<params>::input_t *inputs, typename TestTrait<params>::output_t *outputs, int32_t instance) {
-    context_t context(cgbn_print_monitor);
+    context_t context(cgbn::MonitorKind::kPrint);
     env_t     env(context);
     bn_t      h1, h2, r1;
     uint32_t  divisor, remainder;
 
-    cgbn_load(env, h1, &(inputs[instance].h1));
-    cgbn_load(env, h2, &(inputs[instance].h2));
+    cgbn::load(env, h1, &(inputs[instance].h1));
+    cgbn::load(env, h2, &(inputs[instance].h2));
 
-    divisor=cgbn_get_ui32(env, h2);
+    divisor=cgbn::get_ui32(env, h2);
     if(divisor==0)
       divisor=0xBEEF;
-    remainder=cgbn_rem_ui32(env, h1, divisor);
-    cgbn_set_ui32(env, r1, remainder);
+    remainder=cgbn::rem_ui32(env, h1, divisor);
+    cgbn::set_ui32(env, r1, remainder);
 
-    cgbn_store(env, &(outputs[instance].r1), r1);
+    cgbn::store(env, &(outputs[instance].r1), r1);
   }
 };
 

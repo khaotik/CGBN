@@ -63,8 +63,8 @@ The CGBN APIs currently have a number of limitations:
 
 *  CGBN currently requires 4, 8, 16 or 32 thread per CGBN group.
 *  Only sizes up to 32K bits are supported.  The size must be evenly divisible by 32.
-*  Each cgbn_env_t can only be instantiated at a fixed size.  There is no support for mixing sizes within an environment (other than the cgbn_wide_t).
-*  You can instantiate two cgbn_env_t instances in the same kernel with different sizes, but copying values between them is very slow.
+*  Each BnEnv can only be instantiated at a fixed size.  There is no support for mixing sizes within an environment (other than the WideReg).
+*  You can instantiate two BnEnv instances in the same kernel with different sizes, but copying values between them is very slow.
 *  Performance of some APIs (such as GCD) are not optimal.  Performance will likely improve in future releases.
 
 ### Questions and Comments

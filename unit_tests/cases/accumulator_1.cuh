@@ -29,13 +29,13 @@ struct TestImpl<test_accumulator_1, is_gpu, params> {
   static const uint32_t TPI=params::TPI;
   static const uint32_t BITS=params::BITS;
 
-  typedef cgbn_context_t<TPI, params, is_gpu>        context_t;
-  typedef cgbn_env_t<context_t, BITS>        env_t;
-  typedef typename env_t::cgbn_t             bn_t;
-  typedef typename env_t::cgbn_accumulator_t bn_acc_t;
+  typedef cgbn::BnContext<TPI, params, is_gpu>        context_t;
+  typedef cgbn::BnEnv<context_t, BITS>        env_t;
+  typedef typename env_t::Reg             bn_t;
+  typedef typename env_t::AccumReg bn_acc_t;
 
   __device__ __host__ static void run(typename TestTrait<params>::input_t *inputs, typename TestTrait<params>::output_t *outputs, int32_t instance) {
-    context_t      context(cgbn_print_monitor);
+    context_t      context(cgbn::MonitorKind::kPrint);
     env_t          env(context);
     bn_acc_t       acc;
     bn_t           x, r1, r2;
@@ -44,41 +44,41 @@ struct TestImpl<test_accumulator_1, is_gpu, params> {
 
     u1=inputs[instance].u[0];
 
-    cgbn_load(env, x, &(inputs[instance].h1));
+    cgbn::load(env, x, &(inputs[instance].h1));
     if((u1 & 0x01)==0)
-      cgbn_add(env, acc, x);
+      cgbn::add(env, acc, x);
     else
-      cgbn_sub(env, acc, x);
+      cgbn::sub(env, acc, x);
 
-    cgbn_load(env, x, &(inputs[instance].h2));
+    cgbn::load(env, x, &(inputs[instance].h2));
     if((u1 & 0x02)==0)
-      cgbn_add(env, acc, x);
+      cgbn::add(env, acc, x);
     else
-      cgbn_sub(env, acc, x);
+      cgbn::sub(env, acc, x);
 
-    cgbn_load(env, x, &(inputs[instance].x1));
+    cgbn::load(env, x, &(inputs[instance].x1));
     if((u1 & 0x04)==0)
-      cgbn_add(env, acc, x);
+      cgbn::add(env, acc, x);
     else
-      cgbn_sub(env, acc, x);
+      cgbn::sub(env, acc, x);
 
-    cgbn_load(env, x, &(inputs[instance].x2));
+    cgbn::load(env, x, &(inputs[instance].x2));
     if((u1 & 0x08)==0)
-      cgbn_add(env, acc, x);
+      cgbn::add(env, acc, x);
     else
-      cgbn_sub(env, acc, x);
+      cgbn::sub(env, acc, x);
 
-    cgbn_load(env, x, &(inputs[instance].x3));
+    cgbn::load(env, x, &(inputs[instance].x3));
     if((u1 & 0x10)==0)
-      cgbn_add(env, acc, x);
+      cgbn::add(env, acc, x);
     else
-      cgbn_sub(env, acc, x);
+      cgbn::sub(env, acc, x);
 
-    carry=cgbn_resolve(env, r1, acc);
-    cgbn_set_ui32(env, r2, (uint32_t)carry);
+    carry=cgbn::resolve(env, r1, acc);
+    cgbn::set_ui32(env, r2, (uint32_t)carry);
 
-    cgbn_store(env, &(outputs[instance].r1), r1);
-    cgbn_store(env, &(outputs[instance].r2), r2);
+    cgbn::store(env, &(outputs[instance].r1), r1);
+    cgbn::store(env, &(outputs[instance].r2), r2);
   }
 };
 

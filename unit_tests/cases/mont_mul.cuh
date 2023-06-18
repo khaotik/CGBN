@@ -28,27 +28,27 @@ struct TestImpl<test_mont_mul_1, is_gpu, params> {
   static const uint32_t TPI=params::TPI;
   static const uint32_t BITS=params::BITS;
 
-  typedef cgbn_context_t<TPI, params, is_gpu>    context_t;
-  typedef cgbn_env_t<context_t, BITS>    env_t;
-  typedef typename env_t::cgbn_t         bn_t;
+  typedef cgbn::BnContext<TPI, params, is_gpu>    context_t;
+  typedef cgbn::BnEnv<context_t, BITS>    env_t;
+  typedef typename env_t::Reg         bn_t;
 
   public:
   __device__ __host__ static void run(typename TestTrait<params>::input_t *inputs, typename TestTrait<params>::output_t *outputs, int32_t instance) {
-    context_t context(cgbn_print_monitor);
+    context_t context(cgbn::MonitorKind::kPrint);
     env_t     env(context);
     bn_t      x1, x2, h1, r1;
     uint32_t  np0;
 
-    cgbn_load(env, h1, &(inputs[instance].h1));
-    cgbn_load(env, x1, &(inputs[instance].x1));
-    cgbn_load(env, x2, &(inputs[instance].x2));
+    cgbn::load(env, h1, &(inputs[instance].h1));
+    cgbn::load(env, x1, &(inputs[instance].x1));
+    cgbn::load(env, x2, &(inputs[instance].x2));
 
-    cgbn_bitwise_mask_ior(env, h1, h1, 1);
-    np0=-cgbn_binary_inverse_ui32(env, cgbn_get_ui32(env, h1));
+    cgbn::bitwise_mask_ior(env, h1, h1, 1);
+    np0=-cgbn::binary_inverse_ui32(env, cgbn::get_ui32(env, h1));
 
-    cgbn_mont_mul(env, r1, x1, x2, h1, np0);
+    cgbn::mont_mul(env, r1, x1, x2, h1, np0);
 
-    cgbn_store(env, &(outputs[instance].r1), r1);
+    cgbn::store(env, &(outputs[instance].r1), r1);
   }
 };
 

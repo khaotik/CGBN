@@ -21,8 +21,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+namespace cgbn { namespace core {
+#pragma once
 
-namespace cgbn {
 
 __device__ __forceinline__ static void gcd_reduce(signed_coeff_t &coeffs, int32_t a, int32_t b) {
   int32_t  c0, c1, t, q, i, n=b-a, count=15;
@@ -263,4 +264,5 @@ __device__ __forceinline__ void core_t<env>::gcd(uint32_t r[LIMBS], const uint32
   rotate_right(r, r, count-gcd_count+BITS);
 }
 
-} /* namespace cgbn */
+
+}} // namespace cgbn::core

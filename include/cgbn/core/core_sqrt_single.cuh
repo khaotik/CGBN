@@ -21,8 +21,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+namespace cgbn { namespace core {
+#pragma once
 
-namespace cgbn {
 
 template<class env>
 __device__ __forceinline__ void core_t<env>::sqrt_resolve_rem(uint32_t &rem, const uint32_t s, const uint32_t top, const uint32_t r, const uint32_t shift) {
@@ -323,4 +324,5 @@ __device__ __forceinline__ uint32_t core_t<env>::sqrt_rem_wide(uint32_t &s, uint
   return numthreads==TPI ? x1 : 0;
 }
 
-} /* namespace cgbn */
+
+}} // namespace cgbn::core

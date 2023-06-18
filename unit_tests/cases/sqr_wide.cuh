@@ -28,24 +28,24 @@ struct TestImpl<test_sqr_wide_1, is_gpu, params> {
   static const uint32_t TPI=params::TPI;
   static const uint32_t BITS=params::BITS;
 
-  typedef cgbn_context_t<TPI, params, is_gpu>    context_t;
-  typedef cgbn_env_t<context_t, BITS>    env_t;
-  typedef typename env_t::cgbn_t         bn_t;
-  typedef typename env_t::cgbn_wide_t    bn_wide_t;
+  typedef cgbn::BnContext<TPI, params, is_gpu>    context_t;
+  typedef cgbn::BnEnv<context_t, BITS>    env_t;
+  typedef typename env_t::Reg         bn_t;
+  typedef typename env_t::WideReg    bn_wide_t;
 
   public:
   __device__ __host__ static void run(typename TestTrait<params>::input_t *inputs, typename TestTrait<params>::output_t *outputs, int32_t instance) {
-    context_t context(cgbn_print_monitor);
+    context_t context(cgbn::MonitorKind::kPrint);
     env_t     env(context);
     bn_t      h1;
     bn_wide_t r;
 
-    cgbn_load(env, h1, &(inputs[instance].h1));
+    cgbn::load(env, h1, &(inputs[instance].h1));
 
-    cgbn_sqr_wide(env, r, h1);
+    cgbn::sqr_wide(env, r, h1);
 
-    cgbn_store(env, &(outputs[instance].r1), r._low);
-    cgbn_store(env, &(outputs[instance].r2), r._high);
+    cgbn::store(env, &(outputs[instance].r1), r._low);
+    cgbn::store(env, &(outputs[instance].r2), r._high);
   }
 };
 

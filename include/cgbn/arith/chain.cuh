@@ -21,9 +21,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+namespace cgbn { namespace core {
 #pragma once
 
-namespace cgbn {
 
 template<uint32_t length, bool carry_in, bool carry_out>
 __device__ __forceinline__ chain_t<length, carry_in, carry_out>::chain_t() : _position(0) {
@@ -163,4 +163,5 @@ __device__ __forceinline__ uint32_t chain_t<length, carry_in, carry_out>::xmadhh
   return r;
 }
 
-}
+
+}} // namespace cgbn::core

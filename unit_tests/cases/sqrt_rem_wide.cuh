@@ -28,26 +28,26 @@ struct TestImpl<test_sqrt_rem_wide_1, is_gpu, params> {
   static const uint32_t TPI=params::TPI;
   static const uint32_t BITS=params::BITS;
 
-  typedef cgbn_context_t<TPI, params, is_gpu>    context_t;
-  typedef cgbn_env_t<context_t, BITS>    env_t;
-  typedef typename env_t::cgbn_t         bn_t;
-  typedef typename env_t::cgbn_wide_t    bn_wide_t;
+  typedef cgbn::BnContext<TPI, params, is_gpu>    context_t;
+  typedef cgbn::BnEnv<context_t, BITS>    env_t;
+  typedef typename env_t::Reg         bn_t;
+  typedef typename env_t::WideReg    bn_wide_t;
 
   public:
   __device__ __host__ static void run(typename TestTrait<params>::input_t *inputs, typename TestTrait<params>::output_t *outputs, int32_t instance) {
-    context_t context(cgbn_print_monitor);
+    context_t context(cgbn::MonitorKind::kPrint);
     env_t     env(context);
     bn_t      r1, r2;
     bn_wide_t x, r;
 
-    cgbn_load(env, x._low, &(inputs[instance].h1));
-    cgbn_load(env, x._high, &(inputs[instance].h2));
+    cgbn::load(env, x._low, &(inputs[instance].h1));
+    cgbn::load(env, x._high, &(inputs[instance].h2));
 
-    cgbn_sqrt_rem_wide(env, r1, r, x);
-    cgbn_bitwise_xor(env, r2, r._low, r._high);
+    cgbn::sqrt_rem_wide(env, r1, r, x);
+    cgbn::bitwise_xor(env, r2, r._low, r._high);
 
-    cgbn_store(env, &(outputs[instance].r1), r1);
-    cgbn_store(env, &(outputs[instance].r2), r2);
+    cgbn::store(env, &(outputs[instance].r1), r1);
+    cgbn::store(env, &(outputs[instance].r2), r2);
   }
 };
 

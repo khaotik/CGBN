@@ -28,36 +28,36 @@ struct TestImpl<test_bn2mont_1, is_gpu, params> {
   static const uint32_t TPI=params::TPI;
   static const uint32_t BITS=params::BITS;
 
-  typedef cgbn_context_t<TPI, params, is_gpu>    context_t;
-  typedef cgbn_env_t<context_t, BITS>    env_t;
-  typedef typename env_t::cgbn_t         bn_t;
+  typedef cgbn::BnContext<TPI, params, is_gpu>    context_t;
+  typedef cgbn::BnEnv<context_t, BITS>    env_t;
+  typedef typename env_t::Reg         bn_t;
 
   public:
   __device__ __host__ static void run(typename TestTrait<params>::input_t *inputs, typename TestTrait<params>::output_t *outputs, int32_t instance) {
-    context_t context(cgbn_print_monitor);
+    context_t context(cgbn::MonitorKind::kPrint);
     env_t     env(context);
     bn_t      h1, h2, x1, r1, r2, temp;
     int32_t   compare;
 
-    cgbn_load(env, h1, &(inputs[instance].h1));
-    cgbn_load(env, h2, &(inputs[instance].h2));
-    cgbn_load(env, x1, &(inputs[instance].x1));
+    cgbn::load(env, h1, &(inputs[instance].h1));
+    cgbn::load(env, h2, &(inputs[instance].h2));
+    cgbn::load(env, x1, &(inputs[instance].x1));
 
-    compare=cgbn_compare(env, h1, h2);
+    compare=cgbn::compare(env, h1, h2);
     if(compare>0) {
-      cgbn_set(env, temp, h1);
-      cgbn_set(env, h1, h2);
-      cgbn_set(env, h2, temp);
+      cgbn::set(env, temp, h1);
+      cgbn::set(env, h1, h2);
+      cgbn::set(env, h2, temp);
     }
     else if(compare==0)
-      cgbn_set_ui32(env, h1, 0);
+      cgbn::set_ui32(env, h1, 0);
 
-    cgbn_bitwise_mask_ior(env, h2, h2, 1);
+    cgbn::bitwise_mask_ior(env, h2, h2, 1);
 
-    cgbn_set_ui32(env, r2, cgbn_bn2mont(env, r1, h1, h2));
+    cgbn::set_ui32(env, r2, cgbn::bn2mont(env, r1, h1, h2));
 
-    cgbn_store(env, &(outputs[instance].r1), r1);
-    cgbn_store(env, &(outputs[instance].r2), r2);
+    cgbn::store(env, &(outputs[instance].r1), r1);
+    cgbn::store(env, &(outputs[instance].r2), r2);
   }
 };
 

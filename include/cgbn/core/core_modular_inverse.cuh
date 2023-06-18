@@ -21,8 +21,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+namespace cgbn { namespace core {
+#pragma once
 
-namespace cgbn {
 
 template<uint32_t tpi, uint32_t limbs>
 __device__ __forceinline__ uint32_t top32(const uint32_t sync, uint32_t x[limbs]) {
@@ -389,4 +390,5 @@ if(blockIdx.x==0 && threadIdx.x>=32 && threadIdx.x<64) {
 */
 
 
-} /* namespace cgbn */
+
+}} // namespace cgbn::core

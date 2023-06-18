@@ -71,24 +71,33 @@ class miller_rabin_t {
   // but using non-128-byte aligned types could be a performance limiter for different load/store/compute balances.
   
   typedef struct {
-    cgbn_mem_t<params::BITS> candidate;
+    cgbn::Mem<params::BITS> candidate;
     uint32_t                 passed;
   } instance_t;
 
-  typedef cgbn_context_t<params::TPI, params>    context_t;
-  typedef cgbn_env_t<context_t, params::BITS>    env_t;
-  typedef typename env_t::cgbn_t                 bn_t;
-  typedef typename env_t::cgbn_local_t           bn_local_t;
-  typedef typename env_t::cgbn_wide_t            bn_wide_t;
+  using context_t = cgbn::BnContext<params::TPI, params>;
+  using env_t = cgbn::BnEnv<context_t, params::BITS>;
+  using bn_t = typename env_t::Reg;
+  using bn_local_t = typename env_t::LocalMem;
+  using bn_wide_t = typename env_t::WideReg;
 
   context_t _context;
   env_t     _env;
   int32_t   _instance;
   
-  __device__ __forceinline__ miller_rabin_t(cgbn_monitor_t monitor, cgbn_error_report_t *report, int32_t instance) : _context(monitor, report, (uint32_t)instance), _env(_context), _instance(instance) {
-  }
+  __device__ __forceinline__ miller_rabin_t(
+      cgbn::MonitorKind monitor,
+      cgbn::ErrorReport *report,
+      int32_t instance
+    ):
+    _context(monitor, report, (uint32_t)instance),
+    _env(_context),
+    _instance(instance) {}
 
-  __device__ __forceinline__ void powm(bn_t &x, const bn_t &power, const bn_t &modulus) {
+  __device__ __forceinline__ void powm(
+      bn_t &x,
+      const bn_t &power,
+      const bn_t &modulus) {
     bn_t       t;
     bn_local_t window[1<<window_bits];
     int32_t    index, position, offset;
@@ -98,23 +107,23 @@ class miller_rabin_t {
     // requires:  x<modulus,  modulus is odd
 
     // compute x^0 (in Montgomery space, this is just 2^BITS - modulus)
-    cgbn_negate(_env, t, modulus);
-    cgbn_store(_env, window+0, t);
+    cgbn::negate(_env, t, modulus);
+    cgbn::store(_env, window+0, t);
     
     // convert x into Montgomery space, store into window table
-    np0=cgbn_bn2mont(_env, x, x, modulus);
-    cgbn_store(_env, window+1, x);
-    cgbn_set(_env, t, x);
+    np0=cgbn::bn2mont(_env, x, x, modulus);
+    cgbn::store(_env, window+1, x);
+    cgbn::set(_env, t, x);
     
     // compute x^2, x^3, ... x^(2^window_bits-1), store into window table
     #pragma nounroll
     for(index=2;index<(1<<window_bits);index++) {
-      cgbn_mont_mul(_env, x, x, t, modulus, np0);
-      cgbn_store(_env, window+index, x);
+      cgbn::mont_mul(_env, x, x, t, modulus, np0);
+      cgbn::store(_env, window+index, x);
     }
 
     // find leading high bit
-    position=params::BITS - cgbn_clz(_env, power);
+    position=params::BITS - cgbn::clz(_env, power);
 
     // break the exponent into chunks, each window_bits in length
     // load the most significant non-zero exponent chunk
@@ -123,25 +132,25 @@ class miller_rabin_t {
       position=position-window_bits;
     else
       position=position-offset;
-    index=cgbn_extract_bits_ui32(_env, power, position, window_bits);
-    cgbn_load(_env, x, window+index);
+    index=cgbn::extract_bits_ui32(_env, power, position, window_bits);
+    cgbn::load(_env, x, window+index);
     
     // process the remaining exponent chunks
     while(position>0) {
       // square the result window_bits times
       #pragma nounroll
       for(int sqr_count=0;sqr_count<window_bits;sqr_count++)
-        cgbn_mont_sqr(_env, x, x, modulus, np0);
+        cgbn::mont_sqr(_env, x, x, modulus, np0);
       
       // multiply by next exponent chunk
       position=position-window_bits;
-      index=cgbn_extract_bits_ui32(_env, power, position, window_bits);
-      cgbn_load(_env, t, window+index);
-      cgbn_mont_mul(_env, x, x, t, modulus, np0);
+      index=cgbn::extract_bits_ui32(_env, power, position, window_bits);
+      cgbn::load(_env, t, window+index);
+      cgbn::mont_mul(_env, x, x, t, modulus, np0);
     }
     
     // we've processed the exponent now, convert back to normal space
-    cgbn_mont2bn(_env, x, x, modulus, np0);
+    cgbn::mont2bn(_env, x, x, modulus, np0);
   }
   
   __device__ __forceinline__ uint32_t miller_rabin(const bn_t &candidate, uint32_t *primes, uint32_t prime_count) {
@@ -149,15 +158,15 @@ class miller_rabin_t {
     bn_t      x, power, minus_one;
     bn_wide_t w;
 
-    cgbn_sub_ui32(_env, power, candidate, 1);
-    trailing=cgbn_ctz(_env, power);
-    cgbn_rotate_right(_env, power, power, trailing);
+    cgbn::sub_ui32(_env, power, candidate, 1);
+    trailing=cgbn::ctz(_env, power);
+    cgbn::rotate_right(_env, power, power, trailing);
     
     for(k=0;k<prime_count;k++) {
-      cgbn_set_ui32(_env, x, primes[k]);
+      cgbn::set_ui32(_env, x, primes[k]);
       powm(x, power, candidate); 
-      cgbn_sub_ui32(_env, minus_one, candidate, 1);
-      if(!cgbn_equals_ui32(_env, x, 1) && !cgbn_equals(_env, x, minus_one)) {
+      cgbn::sub_ui32(_env, minus_one, candidate, 1);
+      if(!cgbn::equals_ui32(_env, x, 1) && !cgbn::equals(_env, x, minus_one)) {
         // x is neither 1, nor candidate-1
         if(trailing==1)
           return k;
@@ -166,11 +175,11 @@ class miller_rabin_t {
         // then you might want to do the reduction with Barrett remainders or in Montgomery space.
         count=trailing;
         while(true) {
-          cgbn_sqr_wide(_env, w, x);
-          cgbn_rem_wide(_env, x, w, candidate);
-          if(cgbn_equals(_env, x, minus_one))
+          cgbn::sqr_wide(_env, w, x);
+          cgbn::rem_wide(_env, x, w, candidate);
+          if(cgbn::equals(_env, x, minus_one))
             break;
-          if(--count==0 || cgbn_equals_ui32(_env, x, 1))
+          if(--count==0 || cgbn::equals_ui32(_env, x, 1))
             return k;
         }
       }
@@ -220,7 +229,12 @@ class miller_rabin_t {
 
 
 template<class params>
-__global__ void kernel_miller_rabin(cgbn_error_report_t *report, typename miller_rabin_t<params>::instance_t *instances, uint32_t instance_count, uint32_t *primes, uint32_t prime_count) {
+__global__ void kernel_miller_rabin(
+    cgbn::ErrorReport *report,
+    typename miller_rabin_t<params>::instance_t *instances,
+    uint32_t instance_count,
+    uint32_t *primes,
+    uint32_t prime_count) {
   int32_t instance=(blockIdx.x*blockDim.x + threadIdx.x)/params::TPI;
   
   if(instance>=instance_count)
@@ -228,11 +242,11 @@ __global__ void kernel_miller_rabin(cgbn_error_report_t *report, typename miller
 
   typedef miller_rabin_t<params> local_mr_t;
  
-  local_mr_t                     mr(cgbn_report_monitor, report, instance);
+  local_mr_t                     mr(cgbn::MonitorKind::kReport, report, instance);
   typename local_mr_t::bn_t      candidate;
   uint32_t                       passed;
   
-  cgbn_load(mr._env, candidate, &(instances[instance].candidate));
+  cgbn::load(mr._env, candidate, &(instances[instance].candidate));
       
   passed=mr.miller_rabin(candidate, primes, prime_count);
   
@@ -263,7 +277,7 @@ void run_test(uint32_t instance_count, uint32_t prime_count) {
   typedef typename miller_rabin_t<params>::instance_t instance_t;
   
   instance_t          *instances, *gpuInstances;
-  cgbn_error_report_t *report;
+  cgbn::ErrorReport *report;
   uint32_t            *primes, *gpuPrimes;
   int32_t              TPB=(params::TPB==0) ? 128 : params::TPB;
   int32_t              TPI=params::TPI, IPB=TPB/TPI;

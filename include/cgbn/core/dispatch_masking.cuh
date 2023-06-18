@@ -21,8 +21,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+namespace cgbn { namespace core {
+#pragma once
 
-namespace cgbn {
 
 template<class core, uint32_t padding>
 class dispatch_masking_t {
@@ -250,4 +251,5 @@ class dispatch_masking_t<core, 0> {
   }
 };
 
-} /* namespace cgbn */
+
+}} // namespace cgbn::core

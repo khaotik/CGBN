@@ -10,31 +10,32 @@
 
 template<typename params, bool is_gpu=false>
 struct TestTrait {
+  using Mem = cgbn::Mem<params::size>;
   struct input_t {
-    cgbn_mem_t<params::size> h1;
-    cgbn_mem_t<params::size> h2;
-    cgbn_mem_t<params::size> x1;
-    cgbn_mem_t<params::size> x2;
-    cgbn_mem_t<params::size> x3;
+    Mem h1;
+    Mem h2;
+    Mem x1;
+    Mem x2;
+    Mem x3;
     // keep everything 128 byte aligned
     uint32_t                 u[32];
   };
 
   struct output_t {
-    cgbn_mem_t<params::size> r1;
-    cgbn_mem_t<params::size> r2;
+    Mem r1;
+    Mem r2;
   };
 
   using bn_context_t = std::conditional_t<is_gpu,
-        cgbn_cuda_context_t<params::TPI>,
-        cgbn_gmp_context_t<params::TPI> >;
+        cgbn::CudaBnContext<params::TPI>,
+        cgbn::GmpBnContext<params::TPI> >;
   using bn_env_t = std::conditional_t<is_gpu,
-    cgbn_cuda_env_t<bn_context_t, params::size>,
-    cgbn_gmp_env_t<bn_context_t, params::size>
+    cgbn::CudaBnEnv<bn_context_t, params::size>,
+    cgbn::GmpBnEnv<bn_context_t, params::size>
   >;
-  using bn_t = typename bn_env_t::cgbn_t;
-  using wide_t = typename bn_env_t::cgbn_wide_t;
-  using bn_acc_t = typename bn_env_t::cgbn_accumulator_t;
+  using bn_t = typename bn_env_t::Reg;
+  using wide_t = typename bn_env_t::WideReg;
+  using bn_acc_t = typename bn_env_t::AccumReg;
 };
 
 typedef enum test_enum {

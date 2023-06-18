@@ -22,13 +22,14 @@ IN THE SOFTWARE.
 
 ***/
 
-inline cudaError_t cgbn_error_report_alloc(cgbn_error_report_t **report) {
+namespace cgbn {
+inline cudaError_t cgbn_error_report_alloc(ErrorReport **report) {
   cudaError_t status;
 
-  status=cudaMallocManaged((void **)report, sizeof(cgbn_error_report_t));
+  status=cudaMallocManaged((void **)report, sizeof(ErrorReport));
   if(status!=0)
     return status;
-  (*report)->_error=cgbn_no_error;
+  (*report)->_error=Error::kSuccess;
   (*report)->_instance=0xFFFFFFFFu;
   (*report)->_threadIdx.x=0xFFFFFFFFu;
   (*report)->_threadIdx.y=0xFFFFFFFFu;
@@ -39,16 +40,16 @@ inline cudaError_t cgbn_error_report_alloc(cgbn_error_report_t **report) {
   return status;
 }
 
-inline cudaError_t cgbn_error_report_free(cgbn_error_report_t *report) {
+inline cudaError_t cgbn_error_report_free(ErrorReport *report) {
   return cudaFree(report);
 }
 
-inline bool cgbn_error_report_check(cgbn_error_report_t *report) {
-  return report->_error!=cgbn_no_error;
+inline bool cgbn_error_report_check(ErrorReport *report) {
+  return report->_error!=Error::kSuccess;
 }
 
-inline void cgbn_error_report_reset(cgbn_error_report_t *report) {
-  report->_error=cgbn_no_error;
+inline void cgbn_error_report_reset(ErrorReport *report) {
+  report->_error=Error::kSuccess;
   report->_instance=0xFFFFFFFFu;
   report->_threadIdx.x=0xFFFFFFFFu;
   report->_threadIdx.y=0xFFFFFFFFu;
@@ -58,34 +59,35 @@ inline void cgbn_error_report_reset(cgbn_error_report_t *report) {
   report->_blockIdx.z=0xFFFFFFFFu;
 }
 
-inline const char *cgbn_error_string(cgbn_error_report_t *report) {
-  if(report->_error==cgbn_no_error)
+inline const char *cgbn_error_string(ErrorReport *report) {
+  if(report->_error==Error::kSuccess)
     return NULL;
   switch(report->_error) {
-    case cgbn_unsupported_threads_per_instance:
+    case Error::kUnsupportedTPI:
       return "unsupported threads per instance";
-    case cgbn_unsupported_size:
+    case Error::kUnsupportedSize:
       return "unsupported size";
-    case cgbn_unsupported_limbs_per_thread:
+    case Error::kUnsupportedLimbsPerThread:
       return "unsupported limbs per thread";
-    case cgbn_unsupported_operation:
+    case Error::kUnsupportedOperation:
       return "unsupported operation";
-    case cgbn_threads_per_block_mismatch:
+    case Error::kTBPMismatch:
       return "TPB does not match blockDim.x";
-    case cgbn_threads_per_instance_mismatch:
+    case Error::kTPIMismatch:
       return "TPI does not match env_t::TPI";
-    case cgbn_division_by_zero_error:
+    case Error::kDivisionByZero:
       return "division by zero";
-    case cgbn_division_overflow_error:
+    case Error::kDivsionOverflow:
       return "division overflow";
-    case cgbn_invalid_montgomery_modulus_error:
+    case Error::kMontgomeryModulusError:
       return "invalid montgomery modulus";
-    case cgbn_modulus_not_odd_error:
+    case Error::kModulusNotOdd:
       return "invalid modulus (it must be odd)";
-    case cgbn_inverse_does_not_exist_error:
+    case Error::kInversionDoesNotExist:
       return "inverse does not exist";      
-    case cgbn_no_error:
+    case Error::kSuccess:
       break;
   }
   return NULL;
+}
 }

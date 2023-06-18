@@ -21,8 +21,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+#pragma once
+namespace cgbn { namespace core {
 
-namespace cgbn {
 
 template<uint32_t denominator>
 __device__ __forceinline__ uint32_t static_divide_small(uint32_t numerator) {
@@ -39,4 +40,4 @@ __device__ __forceinline__ uint32_t static_remainder_small(uint32_t numerator) {
   return numerator-static_divide_small<denominator>(numerator)*denominator;
 }
 
-}
+}} // namespace cgbn::core

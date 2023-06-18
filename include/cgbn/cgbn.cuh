@@ -50,14 +50,9 @@ template< bool B, class T = void > using enable_if_t = typename enable_if<B,T>::
 #include "cgbn/cgbn_types.cuh"
 
 #ifndef __CUDACC_RTC__
-#include "c_api.h"
-#include "c_api.cc"
+#include "error_report.cuh"
+#include "error_report.cu"
 #endif
-
-template<uint32_t tpi, typename params, bool is_gpu> 
-struct _cgbn_context_infer;
-template<uint32_t tpi, typename params, bool is_gpu=true> 
-using cgbn_context_t = typename _cgbn_context_infer<tpi, params, is_gpu>::type;
 
 #if defined(__CUDACC__) || defined(__CUDACC_RTC__)
   #if !defined(XMP_IMAD) && !defined(XMP_XMAD) && !defined(XMP_WMAD)
@@ -71,18 +66,21 @@ using cgbn_context_t = typename _cgbn_context_infer<tpi, params, is_gpu>::type;
   #endif
 #endif
 #include "cgbn/cgbn_cuda.cuh"
+
 #if (defined(CGBN_NO_GMP) || defined(__CUDACC_RTC__))
 template<typename ctx_ty, uint32_t bits, std::enable_if_t<ctx_ty::is_gpu,bool> = true >
-using cgbn_env_t = cgbn_cuda_env_t<ctx_ty, bits>;
+using BnEnv = CudaBnEnv<ctx_ty, bits>;
 
 #else
 
 #include "cgbn/cgbn_mpz.h"
+namespace cgbn {
 template<typename ctx_ty, uint32_t bits> // TODO use variadic template for more args ?
-using cgbn_env_t = std::conditional_t<ctx_ty::is_gpu,
-  cgbn_cuda_env_t<ctx_ty, bits>,
-  cgbn_gmp_env_t<ctx_ty, bits>
+using BnEnv = std::conditional_t<ctx_ty::is_gpu,
+  CudaBnEnv<ctx_ty, bits>,
+  GmpBnEnv<ctx_ty, bits>
 >;
+} // namespace cgbn
 #endif
 
 // TODO.feat impl CPU backend
@@ -90,340 +88,343 @@ using cgbn_env_t = std::conditional_t<ctx_ty::is_gpu,
   #include "cgbn_cpu.h"
 #endif
 
-template<class env_t, class source_cgbn_t> CGBN_API_INLINE void
-cgbn_set(env_t env, typename env_t::cgbn_t &r, const source_cgbn_t &a) {
+namespace cgbn {
+
+template<class env_t, typename src_ty> CGBN_API_INLINE void
+set(env_t env, typename env_t::Reg &r, const src_ty &a) {
   env.set(r, a); }
 template<class env_t>
-__host__ __device__ __forceinline__ void cgbn_swap(env_t env, typename env_t::cgbn_t &r, typename env_t::cgbn_t &a) {
+__host__ __device__ __forceinline__ void swap(env_t env, typename env_t::Reg &r, typename env_t::Reg &a) {
   env.swap(r, a); }
 template<class env_t> CGBN_API_INLINE int32_t
-cgbn_add(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
+add(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a, const typename env_t::Reg &b) {
   return env.add(r, a, b); }
 template<class env_t> CGBN_API_INLINE int32_t
-cgbn_sub(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
+sub(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a, const typename env_t::Reg &b) {
   return env.sub(r, a, b); }
 template<class env_t> CGBN_API_INLINE int32_t
-cgbn_negate(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a) {
+negate(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a) {
   return env.negate(r, a); }
 template<class env_t> CGBN_API_INLINE void
-cgbn_mul(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
+mul(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a, const typename env_t::Reg &b) {
   env.mul(r, a, b); }
 template<class env_t> CGBN_API_INLINE void
-cgbn_mul_high(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
+mul_high(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a, const typename env_t::Reg &b) {
   env.mul_high(r, a, b); }
 template<class env_t> CGBN_API_INLINE void
-cgbn_sqr(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a) {
+sqr(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a) {
   env.sqr(r, a); }
 template<class env_t> CGBN_API_INLINE void
-cgbn_sqr_high(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a) {
+sqr_high(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a) {
   env.sqr_high(r, a); }
 template<class env_t> CGBN_API_INLINE void
-cgbn_div(env_t env, typename env_t::cgbn_t &q, const typename env_t::cgbn_t &num, const typename env_t::cgbn_t &denom) {
+div(env_t env, typename env_t::Reg &q, const typename env_t::Reg &num, const typename env_t::Reg &denom) {
   env.div(q, num, denom); }
 template<class env_t> CGBN_API_INLINE void
-cgbn_rem(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &num, const typename env_t::cgbn_t &denom) {
+rem(env_t env, typename env_t::Reg &r, const typename env_t::Reg &num, const typename env_t::Reg &denom) {
   env.rem(r, num, denom); }
 template<class env_t> CGBN_API_INLINE void
-cgbn_div_rem(env_t env, typename env_t::cgbn_t &q, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &num, const typename env_t::cgbn_t &denom) {
+div_rem(env_t env, typename env_t::Reg &q, typename env_t::Reg &r, const typename env_t::Reg &num, const typename env_t::Reg &denom) {
   env.div_rem(q, r, num, denom); }
 template<class env_t> CGBN_API_INLINE void
-cgbn_sqrt(env_t env, typename env_t::cgbn_t &s, const typename env_t::cgbn_t &a) {
+sqrt(env_t env, typename env_t::Reg &s, const typename env_t::Reg &a) {
   env.sqrt(s, a); }
 template<class env_t> CGBN_API_INLINE void
-cgbn_sqrt_rem(env_t env, typename env_t::cgbn_t &s, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a) {
+sqrt_rem(env_t env, typename env_t::Reg &s, typename env_t::Reg &r, const typename env_t::Reg &a) {
   env.sqrt_rem(s, r, a); }
 template<class env_t> CGBN_API_INLINE bool
-cgbn_equals(env_t env, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
+equals(env_t env, const typename env_t::Reg &a, const typename env_t::Reg &b) {
   return env.equals(a, b); }
 template<class env_t> CGBN_API_INLINE int32_t
-cgbn_compare(env_t env, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
+compare(env_t env, const typename env_t::Reg &a, const typename env_t::Reg &b) {
   return env.compare(a, b); }
 template<class env_t> CGBN_API_INLINE void
-cgbn_extract_bits(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t start, const uint32_t len) {
+extract_bits(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a, const uint32_t start, const uint32_t len) {
   env.extract_bits(r, a, start, len); }
 template<class env_t> CGBN_API_INLINE void
-cgbn_insert_bits(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t start, const uint32_t len, const typename env_t::cgbn_t &value) {
+insert_bits(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a, const uint32_t start, const uint32_t len, const typename env_t::Reg &value) {
   env.insert_bits(r, a, start, len, value); }
 
 /* ui32 arithmetic routines*/
 template<class env_t> CGBN_API_INLINE uint32_t
-cgbn_get_ui32(env_t env, const typename env_t::cgbn_t &a) {
+get_ui32(env_t env, const typename env_t::Reg &a) {
   return env.get_ui32(a);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_set_ui32(env_t env, typename env_t::cgbn_t &r, const uint32_t value) {
+set_ui32(env_t env, typename env_t::Reg &r, const uint32_t value) {
   env.set_ui32(r, value);
 }
 template<class env_t> CGBN_API_INLINE int32_t
-cgbn_add_ui32(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t add) {
+add_ui32(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a, const uint32_t add) {
   return env.add_ui32(r, a, add);
 }
 template<class env_t> CGBN_API_INLINE int32_t
-cgbn_sub_ui32(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t sub) {
+sub_ui32(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a, const uint32_t sub) {
   return env.sub_ui32(r, a, sub);
 }
 template<class env_t> CGBN_API_INLINE uint32_t
-cgbn_mul_ui32(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t mul) {
+mul_ui32(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a, const uint32_t mul) {
   return env.mul_ui32(r, a, mul);
 }
 template<class env_t> CGBN_API_INLINE uint32_t
-cgbn_div_ui32(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t div) {
+div_ui32(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a, const uint32_t div) {
   return env.div_ui32(r, a, div);
 }
 template<class env_t> CGBN_API_INLINE uint32_t
-cgbn_rem_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t div) {
+rem_ui32(env_t env, const typename env_t::Reg &a, const uint32_t div) {
   return env.rem_ui32(a, div);
 }
 template<class env_t> CGBN_API_INLINE bool
-cgbn_equals_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t value) {
+equals_ui32(env_t env, const typename env_t::Reg &a, const uint32_t value) {
   return env.equals_ui32(a, value);
 }
 template<class env_t> CGBN_API_INLINE bool
-cgbn_all_equals_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t value) {
+all_equals_ui32(env_t env, const typename env_t::Reg &a, const uint32_t value) {
   return env.all_equals_ui32(a, value);
 }
 template<class env_t> CGBN_API_INLINE int32_t
-cgbn_compare_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t value) {
+compare_ui32(env_t env, const typename env_t::Reg &a, const uint32_t value) {
   return env.compare_ui32(a, value);
 }
 template<class env_t> CGBN_API_INLINE uint32_t
-cgbn_extract_bits_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t start, const uint32_t len) {
+extract_bits_ui32(env_t env, const typename env_t::Reg &a, const uint32_t start, const uint32_t len) {
   return env.extract_bits_ui32(a, start, len);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_insert_bits_ui32(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t start, const uint32_t len, const uint32_t value) {
+insert_bits_ui32(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a, const uint32_t start, const uint32_t len, const uint32_t value) {
   env.insert_bits_ui32(r, a, start, len, value);
 }
 template<class env_t> CGBN_API_INLINE uint32_t
-cgbn_binary_inverse_ui32(env_t env, const uint32_t n0) {
+binary_inverse_ui32(env_t env, const uint32_t n0) {
   return env.binary_inverse_ui32(n0);
 }
 template<class env_t> CGBN_API_INLINE uint32_t
-cgbn_gcd_ui32(env_t env, const typename env_t::cgbn_t &a, const uint32_t value) {
+gcd_ui32(env_t env, const typename env_t::Reg &a, const uint32_t value) {
   return env.gcd_ui32(a, value);
 }
 /* wide arithmetic routines */
 template<class env_t> CGBN_API_INLINE void
-cgbn_mul_wide(env_t env, typename env_t::cgbn_wide_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
+mul_wide(env_t env, typename env_t::WideReg &r, const typename env_t::Reg &a, const typename env_t::Reg &b) {
   env.mul_wide(r, a, b);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_sqr_wide(env_t env, typename env_t::cgbn_wide_t &r, const typename env_t::cgbn_t &a) {
+sqr_wide(env_t env, typename env_t::WideReg &r, const typename env_t::Reg &a) {
   env.sqr_wide(r, a);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_div_wide(env_t env, typename env_t::cgbn_t &q, const typename env_t::cgbn_wide_t &num, const typename env_t::cgbn_t &denom) {
+div_wide(env_t env, typename env_t::Reg &q, const typename env_t::WideReg &num, const typename env_t::Reg &denom) {
   env.div_wide(q, num, denom);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_rem_wide(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_wide_t &num, const typename env_t::cgbn_t &denom) {
+rem_wide(env_t env, typename env_t::Reg &r, const typename env_t::WideReg &num, const typename env_t::Reg &denom) {
   env.rem_wide(r, num, denom);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_div_rem_wide(env_t env, typename env_t::cgbn_t &q, typename env_t::cgbn_t &r, const typename env_t::cgbn_wide_t &num, const typename env_t::cgbn_t &denom) {
+div_rem_wide(env_t env, typename env_t::Reg &q, typename env_t::Reg &r, const typename env_t::WideReg &num, const typename env_t::Reg &denom) {
   env.div_rem_wide(q, r, num, denom);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_sqrt_wide(env_t env, typename env_t::cgbn_t &s, const typename env_t::cgbn_wide_t &a) {
+sqrt_wide(env_t env, typename env_t::Reg &s, const typename env_t::WideReg &a) {
   env.sqrt_wide(s, a);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_sqrt_rem_wide(env_t env, typename env_t::cgbn_t &s, typename env_t::cgbn_wide_t &r, const typename env_t::cgbn_wide_t &a) {
+sqrt_rem_wide(env_t env, typename env_t::Reg &s, typename env_t::WideReg &r, const typename env_t::WideReg &a) {
   env.sqrt_rem_wide(s, r, a);
 }
 /* logical, shifting, masking */
 template<class env_t> CGBN_API_INLINE void
-cgbn_bitwise_and(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
+bitwise_and(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a, const typename env_t::Reg &b) {
   env.bitwise_and(r, a, b);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_bitwise_ior(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
+bitwise_ior(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a, const typename env_t::Reg &b) {
   env.bitwise_ior(r, a, b);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_bitwise_xor(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
+bitwise_xor(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a, const typename env_t::Reg &b) {
   env.bitwise_xor(r, a, b);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_bitwise_complement(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a) {
+bitwise_complement(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a) {
   env.bitwise_complement(r, a);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_bitwise_select(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &clear, const typename env_t::cgbn_t &set, const typename env_t::cgbn_t &select) {
+bitwise_select(env_t env, typename env_t::Reg &r, const typename env_t::Reg &clear, const typename env_t::Reg &set, const typename env_t::Reg &select) {
   env.bitwise_select(r, clear, set, select);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_bitwise_mask_copy(env_t env, typename env_t::cgbn_t &r, const int32_t numbits) {
+bitwise_mask_copy(env_t env, typename env_t::Reg &r, const int32_t numbits) {
   env.bitwise_mask_copy(r, numbits);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_bitwise_mask_and(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const int32_t numbits) {
+bitwise_mask_and(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a, const int32_t numbits) {
   env.bitwise_mask_and(r, a, numbits);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_bitwise_mask_ior(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const int32_t numbits) {
+bitwise_mask_ior(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a, const int32_t numbits) {
   env.bitwise_mask_ior(r, a, numbits);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_bitwise_mask_xor(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const int32_t numbits) {
+bitwise_mask_xor(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a, const int32_t numbits) {
   env.bitwise_mask_xor(r, a, numbits);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_bitwise_mask_select(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &clear, const typename env_t::cgbn_t &set, int32_t numbits) {
+bitwise_mask_select(env_t env, typename env_t::Reg &r, const typename env_t::Reg &clear, const typename env_t::Reg &set, int32_t numbits) {
   env.bitwise_mask_select(r, clear, set, numbits);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_shift_left(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t numbits) {
+shift_left(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a, const uint32_t numbits) {
   env.shift_left(r, a, numbits);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_shift_right(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t numbits) {
+shift_right(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a, const uint32_t numbits) {
   env.shift_right(r, a, numbits);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_rotate_left(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t numbits) {
+rotate_left(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a, const uint32_t numbits) {
   env.rotate_left(r, a, numbits);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_rotate_right(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const uint32_t numbits) {
+rotate_right(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a, const uint32_t numbits) {
   env.rotate_right(r, a, numbits);
 }
 /* bit counting */
 template<class env_t> CGBN_API_INLINE uint32_t
-cgbn_pop_count(env_t env, const typename env_t::cgbn_t &a) {
+pop_count(env_t env, const typename env_t::Reg &a) {
   return env.pop_count(a);
 }
 template<class env_t> CGBN_API_INLINE uint32_t
-cgbn_clz(env_t env, const typename env_t::cgbn_t &a) {
+clz(env_t env, const typename env_t::Reg &a) {
   return env.clz(a);
 }
 template<class env_t> CGBN_API_INLINE uint32_t
-cgbn_ctz(env_t env, const typename env_t::cgbn_t &a) {
+ctz(env_t env, const typename env_t::Reg &a) {
   return env.ctz(a);
 }
 /* accumulator APIs */
 template<class env_t> CGBN_API_INLINE int32_t
-cgbn_resolve(env_t env, typename env_t::cgbn_t &sum, const typename env_t::cgbn_accumulator_t &accumulator) {
+resolve(env_t env, typename env_t::Reg &sum, const typename env_t::AccumReg &accumulator) {
   return env.resolve(sum, accumulator);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_set(env_t env, typename env_t::cgbn_accumulator_t &accumulator, const typename env_t::cgbn_t &value) {
+set(env_t env, typename env_t::AccumReg &accumulator, const typename env_t::Reg &value) {
   env.set(accumulator, value);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_add(env_t env, typename env_t::cgbn_accumulator_t &accumulator, const typename env_t::cgbn_t &value) {
+add(env_t env, typename env_t::AccumReg &accumulator, const typename env_t::Reg &value) {
   env.add(accumulator, value);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_sub(env_t env, typename env_t::cgbn_accumulator_t &accumulator, const typename env_t::cgbn_t &value) {
+sub(env_t env, typename env_t::AccumReg &accumulator, const typename env_t::Reg &value) {
   env.sub(accumulator, value);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_all_set_ui32(env_t env, typename env_t::cgbn_t &r, const uint32_t value) {
+all_set_ui32(env_t env, typename env_t::Reg &r, const uint32_t value) {
   env.all_set_ui32(r, value);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_set_ui32(env_t env, typename env_t::cgbn_accumulator_t &accumulator, const uint32_t value) {
+set_ui32(env_t env, typename env_t::AccumReg &accumulator, const uint32_t value) {
   env.set_ui32(accumulator, value);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_add_ui32(env_t env, typename env_t::cgbn_accumulator_t &accumulator, const uint32_t value) {
+add_ui32(env_t env, typename env_t::AccumReg &accumulator, const uint32_t value) {
   env.add_ui32(accumulator, value);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_sub_ui32(env_t env, typename env_t::cgbn_accumulator_t &accumulator, const uint32_t value) {
+sub_ui32(env_t env, typename env_t::AccumReg &accumulator, const uint32_t value) {
   env.sub_ui32(accumulator, value);
 }
 /* math */
 template<class env_t> CGBN_API_INLINE void
-cgbn_binary_inverse(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &x) {
+binary_inverse(env_t env, typename env_t::Reg &r, const typename env_t::Reg &x) {
   env.binary_inverse(r, x);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_gcd(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b) {
+gcd(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a, const typename env_t::Reg &b) {
   env.gcd(r, a, b);
 }
 template<class env_t> CGBN_API_INLINE bool
-cgbn_modular_inverse(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &x, const typename env_t::cgbn_t &modulus) {
+modular_inverse(env_t env, typename env_t::Reg &r, const typename env_t::Reg &x, const typename env_t::Reg &modulus) {
   return env.modular_inverse(r, x, modulus);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_modular_power(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &x, const typename env_t::cgbn_t &exponent, const typename env_t::cgbn_t &modulus) {
+modular_power(env_t env, typename env_t::Reg &r, const typename env_t::Reg &x, const typename env_t::Reg &exponent, const typename env_t::Reg &modulus) {
   env.modular_power(r, x, exponent, modulus);
 }
 /* fast division: common divisor / modulus */
 template<class env_t> CGBN_API_INLINE uint32_t
-cgbn_bn2mont(env_t env, typename env_t::cgbn_t &mont, const typename env_t::cgbn_t &bn, const typename env_t::cgbn_t &n) {
+bn2mont(env_t env, typename env_t::Reg &mont, const typename env_t::Reg &bn, const typename env_t::Reg &n) {
   return env.bn2mont(mont, bn, n);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_mont2bn(env_t env, typename env_t::cgbn_t &bn, const typename env_t::cgbn_t &mont, const typename env_t::cgbn_t &n, const uint32_t np0) {
+mont2bn(env_t env, typename env_t::Reg &bn, const typename env_t::Reg &mont, const typename env_t::Reg &n, const uint32_t np0) {
   env.mont2bn(bn, mont, n, np0);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_mont_mul(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &b, const typename env_t::cgbn_t &n, const uint32_t np0) {
+mont_mul(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a, const typename env_t::Reg &b, const typename env_t::Reg &n, const uint32_t np0) {
   env.mont_mul(r, a, b, n, np0);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_mont_sqr(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &a, const typename env_t::cgbn_t &n, const uint32_t np0) {
+mont_sqr(env_t env, typename env_t::Reg &r, const typename env_t::Reg &a, const typename env_t::Reg &n, const uint32_t np0) {
   env.mont_sqr(r, a, n, np0);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_mont_reduce_wide(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_wide_t &a, const typename env_t::cgbn_t &n, const uint32_t np0) {
+mont_reduce_wide(env_t env, typename env_t::Reg &r, const typename env_t::WideReg &a, const typename env_t::Reg &n, const uint32_t np0) {
   env.mont_reduce_wide(r, a, n, np0);
 }
 template<class env_t> CGBN_API_INLINE uint32_t
-cgbn_barrett_approximation(env_t env, typename env_t::cgbn_t &approx, const typename env_t::cgbn_t &denom) {
+barrett_approximation(env_t env, typename env_t::Reg &approx, const typename env_t::Reg &denom) {
   return env.barrett_approximation(approx, denom);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_barrett_div(env_t env, typename env_t::cgbn_t &q, const typename env_t::cgbn_t &num, const typename env_t::cgbn_t &denom, const typename env_t::cgbn_t &approx, const uint32_t denom_clz) {
+barrett_div(env_t env, typename env_t::Reg &q, const typename env_t::Reg &num, const typename env_t::Reg &denom, const typename env_t::Reg &approx, const uint32_t denom_clz) {
   env.barrett_div(q, num, denom, approx, denom_clz);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_barrett_rem(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &num, const typename env_t::cgbn_t &denom, const typename env_t::cgbn_t &approx, const uint32_t denom_clz) {
+barrett_rem(env_t env, typename env_t::Reg &r, const typename env_t::Reg &num, const typename env_t::Reg &denom, const typename env_t::Reg &approx, const uint32_t denom_clz) {
   env.barrett_rem(r, num, denom, approx, denom_clz);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_barrett_div_rem(env_t env, typename env_t::cgbn_t &q, typename env_t::cgbn_t &r, const typename env_t::cgbn_t &num, const typename env_t::cgbn_t &denom, const typename env_t::cgbn_t &approx, const uint32_t denom_clz) {
+barrett_div_rem(env_t env, typename env_t::Reg &q, typename env_t::Reg &r, const typename env_t::Reg &num, const typename env_t::Reg &denom, const typename env_t::Reg &approx, const uint32_t denom_clz) {
   env.barrett_div_rem(q, r, num, denom, approx, denom_clz);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_barrett_div_wide(env_t env, typename env_t::cgbn_t &q, const typename env_t::cgbn_wide_t &num, const typename env_t::cgbn_t &denom, const typename env_t::cgbn_t &approx, const uint32_t denom_clz) {
+barrett_div_wide(env_t env, typename env_t::Reg &q, const typename env_t::WideReg &num, const typename env_t::Reg &denom, const typename env_t::Reg &approx, const uint32_t denom_clz) {
   env.barrett_div_wide(q, num, denom, approx, denom_clz);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_barrett_rem_wide(env_t env, typename env_t::cgbn_t &r, const typename env_t::cgbn_wide_t &num, const typename env_t::cgbn_t &denom, const typename env_t::cgbn_t &approx, const uint32_t denom_clz) {
+barrett_rem_wide(env_t env, typename env_t::Reg &r, const typename env_t::WideReg &num, const typename env_t::Reg &denom, const typename env_t::Reg &approx, const uint32_t denom_clz) {
   env.barrett_rem_wide(r, num, denom, approx, denom_clz);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_barrett_div_rem_wide(env_t env, typename env_t::cgbn_t &q, typename env_t::cgbn_t &r, const typename env_t::cgbn_wide_t &num, const typename env_t::cgbn_t &denom, const typename env_t::cgbn_t &approx, const uint32_t denom_clz) {
+barrett_div_rem_wide(env_t env, typename env_t::Reg &q, typename env_t::Reg &r, const typename env_t::WideReg &num, const typename env_t::Reg &denom, const typename env_t::Reg &approx, const uint32_t denom_clz) {
   env.barrett_div_rem_wide(q, r, num, denom, approx, denom_clz);
 }
 /* load/store to global or shared memory */
 template<class env_t> CGBN_API_INLINE void
-cgbn_load(env_t env, typename env_t::cgbn_t &r, cgbn_mem_t<env_t::BITS> *const address) {
+load(env_t env, typename env_t::Reg &r, Mem<env_t::BITS> *const address) {
   env.load(r, address);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_store(env_t env, cgbn_mem_t<env_t::BITS> *address, const typename env_t::cgbn_t &a) {
+store(env_t env, Mem<env_t::BITS> *address, const typename env_t::Reg &a) {
   env.store(address, a);
 }
 /* truncated load & store */
 template<class env_t> CGBN_API_INLINE void
-cgbn_load_shorter(env_t env, typename env_t::cgbn_t &dst, uint32_t *const src, uint32_t mem_limb_count) {
+load_shorter(env_t env, typename env_t::Reg &dst, uint32_t *const src, uint32_t mem_limb_count) {
   env.load_shorter(dst, src, mem_limb_count);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_store_shorter(env_t env, uint32_t *dst, const typename env_t::cgbn_t &src, uint32_t mem_limb_count) {
+store_shorter(env_t env, uint32_t *dst, const typename env_t::Reg &src, uint32_t mem_limb_count) {
   env.store_shorter(dst, src, mem_limb_count);
 }
 /* load/store to local memory */
 template<class env_t> CGBN_API_INLINE void
-cgbn_load(env_t env, typename env_t::cgbn_t &r, typename env_t::cgbn_local_t *const address) {
+load(env_t env, typename env_t::Reg &r, typename env_t::LocalMem *const address) {
   env.load(r, address);
 }
 template<class env_t> CGBN_API_INLINE void
-cgbn_store(env_t env, typename env_t::cgbn_local_t *address, const typename env_t::cgbn_t &a) {
+store(env_t env, typename env_t::LocalMem *address, const typename env_t::Reg &a) {
   env.store(address, a);
 }
+} // namespace cgbn

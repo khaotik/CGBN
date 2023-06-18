@@ -21,8 +21,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+namespace cgbn { namespace core {
+#pragma once
 
-namespace cgbn {
 
 typedef enum {
   dlimbs_algs_common,
@@ -469,4 +470,5 @@ class dispatch_dlimbs_t<core, dlimbs_algs_full> {
   }
 };
 
-} /* namespace cgbn */
+
+}} // namespace cgbn::core

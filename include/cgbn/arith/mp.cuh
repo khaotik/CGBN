@@ -21,8 +21,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+namespace cgbn { namespace core {
+#pragma once
 
-namespace cgbn {
 
 template<uint32_t limbs>
 __device__ __forceinline__ void mpzero(uint32_t r[limbs]) {
@@ -294,4 +295,4 @@ __device__ __forceinline__ void mprotate_right(uint32_t r[limbs], const uint32_t
     shifter_t<limbs, bit_set<limbs>::high_bit, false>::mprotate_right(r, numlimbs);
 }
 
-} /* cgbn namespace */
+}} // namespace cgbn::core

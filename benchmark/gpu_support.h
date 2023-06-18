@@ -21,6 +21,8 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+#pragma once
+#include "cgbn/cgbn.cuh"
 
 // support routines
 void cuda_check(cudaError_t status, const char *action=NULL, const char *file=NULL, int32_t line=0) {
@@ -34,12 +36,12 @@ void cuda_check(cudaError_t status, const char *action=NULL, const char *file=NU
   }
 }
 
-void cgbn_check(cgbn_error_report_t *report, const char *file=NULL, int32_t line=0) {
+void cgbn_check(cgbn::ErrorReport *report, const char *file=NULL, int32_t line=0) {
   // check for cgbn errors
 
-  if(cgbn_error_report_check(report)) {
+  if(cgbn::cgbn_error_report_check(report)) {
     printf("\n");
-    printf("CGBN error occurred: %s\n", cgbn_error_string(report));
+    printf("CGBN error occurred: %s\n", cgbn::cgbn_error_string(report));
 
     if(report->_instance!=0xFFFFFFFF) {
       printf("Error reported by instance %d", report->_instance);
