@@ -21,6 +21,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+#pragma once
 
 #include "cgbn/core/dispatch_padding.cuh"
 #include "cgbn/core/dispatch_resolver.cuh"

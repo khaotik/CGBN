@@ -21,6 +21,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+#pragma once
 
 namespace cgbn {
 __device__ __forceinline__ uint32_t add_cc(uint32_t a, uint32_t b) {

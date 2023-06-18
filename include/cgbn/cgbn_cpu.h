@@ -22,4 +22,5 @@ IN THE SOFTWARE.
 
 ***/
 
+#pragma once
 #error You must use GMP for now

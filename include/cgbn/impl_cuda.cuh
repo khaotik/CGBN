@@ -21,10 +21,11 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ***/
+#pragma once
 
-#include "cgbn/arith/arith.cuh"
+#include "cgbn/arith.cuh"
 #include "cgbn/core/unpadded.cuh"
-#include "cgbn/core/core.cuh"
+#include "cgbn/core.cuh"
 #include "cgbn/core/core_singleton.cuh"
 
 #if(__CUDACC_VER_MAJOR__<9 || (__CUDACC_VER_MAJOR__==9 && __CUDACC_VER_MINOR__<2))
