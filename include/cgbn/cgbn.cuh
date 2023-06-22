@@ -72,9 +72,10 @@ template< bool B, class T = void > using enable_if_t = typename enable_if<B,T>::
 #include "cgbn/cgbn_cuda.cuh"
 
 #if (defined(CGBN_NO_GMP) || defined(__CUDACC_RTC__))
+namespace cgbn {
 template<typename ctx_ty, uint32_t bits, std::enable_if_t<ctx_ty::is_gpu,bool> = true >
 using BnEnv = CudaBnEnv<ctx_ty, bits>;
-
+} // namespace cgbn
 #else
 
 #include "cgbn/cgbn_mpz.h"

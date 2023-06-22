@@ -48,7 +48,7 @@ struct cgbn_cuda_default_parameters_t {
 template<uint32_t tpi, class params>
 struct CudaBnContext;
 
-template<class context_t, uint32_t bits, SyncScope syncable>
+template<class context_t, uint32_t bits, SyncScope syncable=SyncScope::kInstance>
 struct CudaBnEnv;
 
 /* main classes */
@@ -89,7 +89,7 @@ template<uint32_t tpi, typename params>
 struct _ContextInfer<tpi, params, true> {
   using type = CudaBnContext<tpi, params>; };
 
-template<class context_t, uint32_t bits, SyncScope syncable=SyncScope::kInstance>
+template<class context_t, uint32_t bits, SyncScope syncable>
 struct CudaBnEnv {
 
   // bits must be divisible by 32
