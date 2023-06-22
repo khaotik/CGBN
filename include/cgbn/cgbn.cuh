@@ -34,10 +34,14 @@ IN THE SOFTWARE.
 #elif defined(CGBN_RTC_HAVE_STDLIB)
 // pass
 #else
-typedef int int32_t;
-typedef long long int64_t;
-typedef unsigned int uint32_t;
-typedef unsigned long long uint64_t;
+using int8_t = char; static_assert(sizeof(int8_t) == 1);
+using uint8_t = unsigned char; static_assert(sizeof(uint8_t) == 1);
+using int16_t = short; static_assert(sizeof(int16_t) == 2);
+using uint16_t = unsigned short; static_assert(sizeof(uint16_t) == 2);
+using int32_t = int; static_assert(sizeof(int32_t) == 4);
+using uint32_t = unsigned int; static_assert(sizeof(uint32_t) == 4);
+using int64_t =  long long; static_assert(sizeof(int64_t) == 8);
+using uint64_t = unsigned long long; static_assert(sizeof(uint64_t) == 8);
 namespace std {
 template<bool B, class T = void> struct enable_if {};
 template<class T>                struct enable_if<true, T> { typedef T type; };

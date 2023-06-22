@@ -46,10 +46,10 @@ struct cgbn_cuda_default_parameters_t {
 
 /* forward declarations */
 template<uint32_t tpi, class params>
-class CudaBnContext;
+struct CudaBnContext;
 
 template<class context_t, uint32_t bits, SyncScope syncable>
-class CudaBnEnv;
+struct CudaBnEnv;
 
 /* main classes */
 template<uint32_t tpi, class params=cgbn_cuda_default_parameters_t>
@@ -61,9 +61,9 @@ struct CudaBnContext {
   static constexpr bool     CONSTANT_TIME = params::CONSTANT_TIME;
   static constexpr bool     is_gpu = true;
 
-  const MonitorKind  _monitor;
-  ErrorReport  *const _report;
-  const int32_t         _instance;
+  const MonitorKind    _monitor;
+  ErrorReport  *const  _report;
+  const int32_t        _instance;
   uint32_t             *_scratch;
 
   __device__ __forceinline__ CudaBnContext();
